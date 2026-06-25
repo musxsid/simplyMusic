@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    @apply bg-dark-bg text-dark-text antialiased;
+  }
+}
+
+/* Glassmorphism utility */
+.glass {
+  @apply bg-dark-card/60 backdrop-blur-md border border-white/10 shadow-xl;
+}

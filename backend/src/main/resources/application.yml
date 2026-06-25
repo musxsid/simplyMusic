@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: simplyMusic
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/simplymusic
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/simplymusic
+
+minio:
+  url: http://localhost:9000
+  access-key: admin
+  secret-key: password123
+  bucket-name: music
+
+server:
+  port: 8081
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    
+
+    spring:
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB

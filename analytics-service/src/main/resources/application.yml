@@ -1,0 +1,19 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: analytics-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/simplymusic
+  rabbitmq:
+    host: localhost
+    port: 5672
+    listener:
+      simple:
+        missing-queues-fatal: false
+
+logging:
+  level:
+    root: INFO
