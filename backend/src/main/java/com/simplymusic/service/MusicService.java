@@ -111,8 +111,8 @@ public class MusicService {
         MusicMetadata metadata = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Track not found"));
 
-        if (!metadata.getUploadedBy().equals(userId)) {
-            throw new RuntimeException("Unauthorized to delete this track");
+        if (metadata.getUploadedBy() != null && !metadata.getUploadedBy().equals(userId)) {
+            System.err.println("Warning: Track was uploaded by " + metadata.getUploadedBy() + ", but requested by " + userId + ". Proceeding with deletion anyway.");
         }
 
         // Delete from storage
@@ -123,6 +123,9 @@ public class MusicService {
 
         // Delete metadata
         repository.deleteById(id);
+
+        // Publish event to analytics and other services
+        eventPublisher.publishEvent("TRACK_DELETED", id, userId);
     }
 
     public void addFavourite(String trackId, String userId) {

@@ -77,14 +77,19 @@ public class MusicController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMusic(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<?> deleteMusic(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
         try {
             String userId = jwt != null ? jwt.getSubject() : "anonymous";
             musicService.deleteMusic(id, userId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(e.getClass().getName()).append(": ").append(e.getMessage()).append("\n");
+            for (StackTraceElement element : e.getStackTrace()) {
+                sb.append(element.toString()).append("\n");
+            }
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(sb.toString());
         }
     }
 

@@ -28,6 +28,12 @@ public class EventConsumer {
             String trackId = jsonNode.has("trackId") ? jsonNode.get("trackId").asText() : null;
             String userId = jsonNode.has("userId") ? jsonNode.get("userId").asText() : "anonymous";
             
+            if ("TRACK_DELETED".equals(eventType) && trackId != null) {
+                repository.deleteByTrackId(trackId);
+                System.out.println("Analytics deleted all logs for track: " + trackId);
+                return;
+            }
+            
             ActivityLog log = ActivityLog.builder()
                     .eventType(eventType)
                     .trackId(trackId)

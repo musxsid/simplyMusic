@@ -19,7 +19,7 @@ const Main = () => {
 
   if (!initialized) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-dark-bg text-primary-400">
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50 text-primary-500">
         <div className="animate-pulse text-2xl font-bold tracking-widest">
           INITIALIZING...
         </div>
@@ -29,7 +29,7 @@ const Main = () => {
 
   if (initialized && !authenticated) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-dark-bg text-red-400">
+      <div className="flex h-screen w-full items-center justify-center bg-slate-50 text-rose-500">
         <div className="text-xl">Authentication Failed. Please reload.</div>
       </div>
     );

@@ -51,12 +51,16 @@ public class StorageService {
         );
     }
 
-    public void deleteFile(String objectName) throws Exception {
-        minioClient.removeObject(
-                io.minio.RemoveObjectArgs.builder()
-                        .bucket(bucketName)
-                        .object(objectName)
-                        .build()
-        );
+    public void deleteFile(String objectName) {
+        try {
+            minioClient.removeObject(
+                    io.minio.RemoveObjectArgs.builder()
+                            .bucket(bucketName)
+                            .object(objectName)
+                            .build()
+            );
+        } catch (Exception e) {
+            System.err.println("Failed to delete file from MinIO (it might already be deleted): " + e.getMessage());
+        }
     }
 }

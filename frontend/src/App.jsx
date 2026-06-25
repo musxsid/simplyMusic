@@ -17,35 +17,35 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-dark-bg flex flex-col font-sans text-dark-text relative pb-24">
+      <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800 relative pb-24">
         {/* Navigation Bar */}
-        <nav className="glass sticky top-0 z-50 flex items-center justify-between px-6 py-4">
+        <nav className="sticky top-4 z-50 mx-auto max-w-5xl bg-white/80 backdrop-blur-2xl border border-slate-200 shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-full px-6 py-3 flex items-center justify-between mb-8 transition-all">
           <div className="flex items-center gap-3">
-            <div className="bg-primary-500/20 p-2 rounded-xl text-primary-400">
+            <div className="bg-primary-100 p-2 rounded-xl text-primary-500 shadow-sm">
               <Music className="w-6 h-6" />
             </div>
-            <span className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-200">
+            <span className="text-xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary-500 to-primary-400">
               simplyMusic
             </span>
           </div>
-          <div className="flex items-center gap-6">
-            <Link to="/" className="flex items-center gap-2 hover:text-primary-400 transition-colors">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="flex items-center gap-2 text-slate-500 hover:text-primary-500 hover:bg-slate-100/80 px-4 py-2 rounded-full transition-all hover:scale-105 active:scale-95 font-semibold">
               <Library className="w-5 h-5" />
-              <span className="font-medium">Library</span>
+              <span className="hidden sm:inline">Library</span>
             </Link>
-            <Link to="/favourites" className="flex items-center gap-2 hover:text-primary-400 transition-colors">
+            <Link to="/favourites" className="flex items-center gap-2 text-slate-500 hover:text-primary-500 hover:bg-slate-100/80 px-4 py-2 rounded-full transition-all hover:scale-105 active:scale-95 font-semibold">
               <Heart className="w-5 h-5" />
-              <span className="font-medium">Favourites</span>
+              <span className="hidden sm:inline">Favourites</span>
             </Link>
-            <Link to="/upload" className="flex items-center gap-2 hover:text-primary-400 transition-colors">
+            <Link to="/upload" className="flex items-center gap-2 text-slate-500 hover:text-primary-500 hover:bg-slate-100/80 px-4 py-2 rounded-full transition-all hover:scale-105 active:scale-95 font-semibold">
               <Upload className="w-5 h-5" />
-              <span className="font-medium">Upload</span>
+              <span className="hidden sm:inline">Upload</span>
             </Link>
-            <Link to="/analytics" className="flex items-center gap-2 hover:text-primary-400 transition-colors">
+            <Link to="/analytics" className="flex items-center gap-2 text-slate-500 hover:text-primary-500 hover:bg-slate-100/80 px-4 py-2 rounded-full transition-all hover:scale-105 active:scale-95 font-semibold">
               <Activity className="w-5 h-5" />
-              <span className="font-medium">Analytics</span>
+              <span className="hidden sm:inline">Analytics</span>
             </Link>
-            <button onClick={handleLogout} className="flex items-center gap-2 text-dark-muted hover:text-red-400 transition-colors ml-4 border-l border-white/10 pl-4">
+            <button onClick={handleLogout} className="flex items-center gap-2 text-slate-500 hover:text-rose-500 transition-colors ml-2 border-l border-slate-200 pl-4 hover:scale-110 active:scale-95">
               <LogOut className="w-5 h-5" />
             </button>
           </div>

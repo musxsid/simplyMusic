@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Play, Pause, Volume2, SkipBack, SkipForward } from 'lucide-react';
 import api from '../services/api';
+import NowPlayingView from './NowPlayingView';
 
 const AudioPlayer = ({ track }) => {
   const audioRef = useRef(null);
@@ -10,7 +11,9 @@ const AudioPlayer = ({ track }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const [streamUrl, setStreamUrl] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     if (track) {
@@ -51,6 +54,7 @@ const AudioPlayer = ({ track }) => {
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime);
+      setDuration(audioRef.current.duration);
       setProgress((audioRef.current.currentTime / audioRef.current.duration) * 100);
     }
   };
@@ -66,9 +70,13 @@ const AudioPlayer = ({ track }) => {
   if (!track) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 glass border-t border-white/10 z-50 transform transition-transform translate-y-0">
+    <>
+    <div 
+      className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 transform transition-transform translate-y-0 cursor-pointer hover:bg-white transition-colors duration-300"
+      onClick={() => setIsExpanded(true)}
+    >
       {/* Progress Bar (Full Width Top) */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-dark-bg/50">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-slate-200">
         <input
           type="range"
           min="0"
@@ -86,38 +94,38 @@ const AudioPlayer = ({ track }) => {
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between gap-4">
         {/* Track Info */}
         <div className="flex items-center gap-4 w-1/3 min-w-0">
-          <div className="w-14 h-14 rounded-lg bg-dark-bg flex items-center justify-center flex-shrink-0 border border-white/5 shadow-md">
-            <span className="font-bold text-primary-400 text-xl">{track.title?.charAt(0)}</span>
+          <div className="w-14 h-14 rounded-lg bg-primary-100 flex items-center justify-center flex-shrink-0 border border-slate-200 shadow-sm">
+            <span className="font-bold text-primary-500 text-xl">{track.title?.charAt(0)}</span>
           </div>
           <div className="min-w-0">
-            <h4 className="font-bold text-white truncate">{track.title}</h4>
-            <p className="text-sm text-dark-muted truncate">{track.artist}</p>
+            <h4 className="font-bold text-slate-800 truncate">{track.title}</h4>
+            <p className="text-sm text-slate-500 truncate">{track.artist}</p>
           </div>
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col items-center justify-center flex-1">
+        <div className="flex flex-col items-center justify-center flex-1" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center gap-6">
-            <button className="text-dark-muted hover:text-white transition-colors">
+            <button className="text-slate-500 hover:text-primary-500 transition-colors">
               <SkipBack className="w-5 h-5" />
             </button>
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className="bg-white text-black p-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
+              className="bg-primary-500 text-white p-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-glow-primary hover:bg-primary-400"
             >
               {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
             </button>
-            <button className="text-dark-muted hover:text-white transition-colors">
+            <button className="text-slate-500 hover:text-primary-500 transition-colors">
               <SkipForward className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Volume & Extras */}
-        <div className="flex items-center justify-end gap-4 w-1/3">
-          <Volume2 className="w-5 h-5 text-dark-muted" />
-          <div className="w-24 h-1 bg-dark-bg rounded-full overflow-hidden">
-            <div className="bg-primary-400 h-full w-2/3"></div>
+        <div className="flex items-center justify-end gap-4 w-1/3" onClick={(e) => e.stopPropagation()}>
+          <Volume2 className="w-5 h-5 text-slate-500" />
+          <div className="w-24 h-1 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+            <div className="bg-primary-500 h-full w-2/3"></div>
           </div>
         </div>
       </div>
@@ -131,6 +139,20 @@ const AudioPlayer = ({ track }) => {
         />
       )}
     </div>
+
+    {isExpanded && (
+      <NowPlayingView
+        track={track}
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        progress={progress}
+        handleSeek={handleSeek}
+        currentTime={currentTime}
+        duration={duration}
+        onClose={() => setIsExpanded(false)}
+      />
+    )}
+    </>
   );
 };
 

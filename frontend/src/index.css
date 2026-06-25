@@ -3,11 +3,11 @@
 
 @layer base {
   body {
-    @apply bg-dark-bg text-dark-text antialiased;
+    @apply bg-slate-50 text-slate-800 antialiased;
   }
 }
 
 /* Glassmorphism utility */
 .glass {
-  @apply bg-dark-card/60 backdrop-blur-md border border-white/10 shadow-xl;
+  @apply bg-white/70 backdrop-blur-xl border border-white shadow-neumorphic;
 }

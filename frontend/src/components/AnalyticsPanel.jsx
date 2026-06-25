@@ -64,11 +64,11 @@ const AnalyticsPanel = () => {
   return (
     <div className="max-w-4xl mx-auto mt-10 pb-32">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-3">
-          <Activity className="w-8 h-8 text-primary-400" />
+        <h1 className="text-3xl font-extrabold tracking-tight flex items-center gap-3 text-slate-800">
+          <Activity className="w-8 h-8 text-primary-500" />
           Analytics Dashboard
         </h1>
-        <p className="text-dark-muted mt-2">Real-time statistics driven by our RabbitMQ event bus.</p>
+        <p className="text-slate-500 mt-2">Real-time statistics driven by our RabbitMQ event bus.</p>
       </div>
 
       {loading ? (
@@ -79,30 +79,30 @@ const AnalyticsPanel = () => {
         <div className="flex flex-col gap-10">
           {/* Top Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="glass rounded-3xl p-8 border border-white/5 relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 relative overflow-hidden group shadow-sm hover:scale-[1.02] transition-all duration-300 hover:shadow-neumorphic cursor-pointer">
+              <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 text-slate-500">
                 <UploadCloud className="w-48 h-48" />
               </div>
               <div className="flex items-center gap-4 mb-4">
-                <div className="bg-primary-500/20 p-3 rounded-xl">
-                  <UploadCloud className="w-6 h-6 text-primary-400" />
+                <div className="bg-primary-100 p-3 rounded-xl shadow-sm">
+                  <UploadCloud className="w-6 h-6 text-primary-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-white">Total Uploads</h3>
+                <h3 className="text-xl font-semibold text-slate-800">Total Uploads</h3>
               </div>
               <p className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-primary-200 to-primary-600">
                 {stats.totalUploads}
               </p>
             </div>
 
-            <div className="glass rounded-3xl p-8 border border-white/5 relative overflow-hidden group">
-              <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500">
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 relative overflow-hidden group shadow-sm hover:scale-[1.02] transition-all duration-300 hover:shadow-neumorphic cursor-pointer">
+              <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity duration-500 text-slate-500">
                 <PlayCircle className="w-48 h-48" />
               </div>
               <div className="flex items-center gap-4 mb-4">
-                <div className="bg-primary-500/20 p-3 rounded-xl">
-                  <PlayCircle className="w-6 h-6 text-primary-400" />
+                <div className="bg-primary-100 p-3 rounded-xl shadow-sm">
+                  <PlayCircle className="w-6 h-6 text-primary-500" />
                 </div>
-                <h3 className="text-xl font-semibold text-white">Total Streams</h3>
+                <h3 className="text-xl font-semibold text-slate-800">Total Streams</h3>
               </div>
               <p className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-br from-primary-200 to-primary-600">
                 {stats.totalPlays}
@@ -113,12 +113,12 @@ const AnalyticsPanel = () => {
           {/* Playback History List */}
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <History className="w-6 h-6 text-primary-400" />
-              <h2 className="text-2xl font-bold text-white">Top Tracks & History</h2>
+              <History className="w-6 h-6 text-primary-500" />
+              <h2 className="text-2xl font-bold text-slate-800">Top Tracks & History</h2>
             </div>
 
             {history.length === 0 ? (
-              <div className="glass rounded-2xl p-8 text-center text-dark-muted border border-white/5">
+              <div className="glass rounded-2xl p-8 text-center text-slate-500 border border-slate-200 shadow-sm">
                 No playback history available.
               </div>
             ) : (
@@ -128,26 +128,26 @@ const AnalyticsPanel = () => {
                   if (!track) return null; // Track might have been deleted
 
                   return (
-                    <div key={item.trackId} className="glass rounded-2xl p-4 flex items-center justify-between border border-white/5 hover:border-primary-500/30 transition-all duration-300">
+                    <div key={item.trackId} className="bg-white rounded-2xl p-4 flex items-center justify-between border border-slate-200 shadow-sm hover:border-primary-400 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer group">
                       <div className="flex items-center gap-4">
-                        <div className="w-8 text-center text-dark-muted font-bold">
+                        <div className="w-8 text-center text-slate-500 font-bold">
                           #{index + 1}
                         </div>
-                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-600/50 to-primary-900/50 flex items-center justify-center flex-shrink-0">
-                          <Disc3 className="w-6 h-6 text-white/50" />
+                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center flex-shrink-0">
+                          <Disc3 className="w-6 h-6 text-primary-500" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-white font-bold">{track.title}</span>
-                          <span className="text-sm text-dark-muted">{track.artist}</span>
+                          <span className="text-slate-800 font-bold">{track.title}</span>
+                          <span className="text-sm text-slate-500">{track.artist}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-8 pr-4">
                         <div className="flex flex-col items-end">
-                          <span className="text-xs text-dark-muted uppercase tracking-wider font-semibold">Total Plays</span>
-                          <span className="text-xl font-black text-primary-300">{item.playCount}</span>
+                          <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Total Plays</span>
+                          <span className="text-xl font-black text-primary-600">{item.playCount}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-dark-muted text-sm min-w-[100px] justify-end">
+                        <div className="flex items-center gap-2 text-slate-500 text-sm min-w-[100px] justify-end">
                           <Clock className="w-4 h-4" />
                           {formatTimeAgo(item.lastPlayed)}
                         </div>

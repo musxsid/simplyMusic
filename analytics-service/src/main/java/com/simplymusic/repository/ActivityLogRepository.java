@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public interface ActivityLogRepository extends MongoRepository<ActivityLog, String> {
     long countByEventType(String eventType);
+    void deleteByTrackId(String trackId);
 
     @Aggregation(pipeline = {
             "{ $match: { eventType: 'TRACK_PLAYED' } }",
