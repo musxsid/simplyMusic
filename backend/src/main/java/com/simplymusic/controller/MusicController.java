@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.apache.tika.Tika;
 import java.net.URI;
 import java.util.List;
 
@@ -27,10 +29,16 @@ public class MusicController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<MusicMetadata> uploadMusic(
+    public ResponseEntity<?> uploadMusic(
             @RequestParam("file") MultipartFile file,
             @AuthenticationPrincipal Jwt jwt) {
         try {
+            Tika tika = new Tika();
+            String mimeType = tika.detect(file.getInputStream());
+            if (mimeType == null || !mimeType.startsWith("audio/")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file type: Only audio files are allowed");
+            }
+
             String userId = jwt != null ? jwt.getSubject() : "anonymous";
             MusicMetadata metadata = musicService.uploadMusic(file, userId);
             return ResponseEntity.status(HttpStatus.CREATED).body(metadata);
@@ -76,6 +84,7 @@ public class MusicController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @securityService.isTrackOwner(#id, #jwt.subject))")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMusic(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
         try {

@@ -16,7 +16,7 @@ const AnalyticsPanel = () => {
   const fetchData = async () => {
     try {
       // Fetch stats
-      const statsResponse = await fetch('http://localhost:8082/api/v1/analytics/stats', {
+      const statsResponse = await fetch('http://localhost:8080/api/v1/analytics/stats', {
         headers: {
           'Authorization': `Bearer ${keycloak.token}`
         }
@@ -26,7 +26,7 @@ const AnalyticsPanel = () => {
       }
 
       // Fetch history
-      const historyResponse = await fetch('http://localhost:8082/api/v1/analytics/history', {
+      const historyResponse = await fetch('http://localhost:8080/api/v1/analytics/history', {
         headers: {
           'Authorization': `Bearer ${keycloak.token}`
         }

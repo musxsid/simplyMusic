@@ -111,9 +111,7 @@ public class MusicService {
         MusicMetadata metadata = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Track not found"));
 
-        if (metadata.getUploadedBy() != null && !metadata.getUploadedBy().equals(userId)) {
-            System.err.println("Warning: Track was uploaded by " + metadata.getUploadedBy() + ", but requested by " + userId + ". Proceeding with deletion anyway.");
-        }
+        // Ownership is validated by @PreAuthorize in the controller
 
         // Delete from storage
         storageService.deleteFile(metadata.getFileUrl());

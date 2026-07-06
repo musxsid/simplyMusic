@@ -29,8 +29,14 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     ports:
-      - "8080:8080"
+      - "9090:8080"
     command: start-dev
+
+  redis:
+    image: redis:latest
+    container_name: music-redis
+    ports:
+      - "6379:6379"
 
   rabbitmq:
     image: rabbitmq:3-management
