@@ -8,6 +8,24 @@ Unlike standard monolithic CRUD applications, simplyMusic is designed for fault 
 
 The system is built on a decoupled microservices architecture to ensure high availability and prevent performance bottlenecks during large file uploads.
 
+```mermaid
+graph TD
+    Client[Frontend Client - Port 5173] -->|HTTP/REST| Gateway(API Gateway - Port 8080)
+    Gateway -->|Auth Check| Keycloak(Keycloak - Port 9090)
+    
+    Gateway -->|/api/v1/music/**| MusicService(Backend Service - Port 8081)
+    Gateway -->|/api/v1/analytics/**| AnalyticsService(Analytics Service - Port 8082)
+    
+    MusicService -->|Read/Write Metadata| MongoDB[(MongoDB - Port 27017)]
+    MusicService -->|Read/Write Audio/Images| MinIO[(MinIO - Port 9000)]
+    MusicService -->|Publish Events| RabbitMQ{RabbitMQ - Port 5672}
+    
+    AnalyticsService -->|Consume Events| RabbitMQ
+    AnalyticsService -->|Read/Write Analytics| MongoDB
+    
+    Gateway -.->|Rate Limiting| Redis[(Redis - Port 6379)]
+```
+
 1. **Authentication (Keycloak):** All endpoints are secured behind Keycloak Identity Access Management (IAM). Users receive secure JWTs to access the platform.
 2. **Main API Gateway (Spring Boot):** Intercepts requests, validates JWTs, and handles the orchestration of uploads. 
 3. **Split Storage Strategy:** 
