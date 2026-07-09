@@ -14,4 +14,6 @@ public interface MusicMetadataRepository extends MongoRepository<MusicMetadata, 
     Optional<MusicMetadata> findByFileHash(String fileHash);
     
     List<MusicMetadata> findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCaseOrAlbumContainingIgnoreCase(String title, String artist, String album);
+    
+    List<MusicMetadata> findTop10ByOrderByCreatedAtDesc();
 }

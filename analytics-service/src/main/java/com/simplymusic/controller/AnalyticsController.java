@@ -51,6 +51,11 @@ public class AnalyticsController {
         return ResponseEntity.ok(repository.getPlaybackHistory());
     }
 
+    @GetMapping("/top-tracks")
+    public ResponseEntity<java.util.List<com.simplymusic.model.TrackHistory>> getTopTracks() {
+        return ResponseEntity.ok(repository.getTopTracks());
+    }
+
     @Data
     @Builder
     public static class StatsResponse {

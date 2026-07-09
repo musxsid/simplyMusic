@@ -81,6 +81,17 @@ public class MusicService {
         return repository.findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCaseOrAlbumContainingIgnoreCase(query, query, query);
     }
 
+    public List<MusicMetadata> getRecentTracks() {
+        return repository.findTop10ByOrderByCreatedAtDesc();
+    }
+
+    public MusicMetadata getFeaturedTrack() {
+        List<MusicMetadata> recent = getRecentTracks();
+        if (recent.isEmpty()) return null;
+        // Simple random selection for featured track from recent tracks
+        return recent.get(new java.util.Random().nextInt(recent.size()));
+    }
+
     public String getStreamUrl(String id) throws Exception {
         MusicMetadata metadata = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Track not found"));

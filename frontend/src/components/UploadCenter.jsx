@@ -67,8 +67,12 @@ const UploadCenter = () => {
       setMetadata(response.data);
       setFile(null);
     } catch (err) {
-      setError('Upload failed. Please try again.');
-      console.error(err);
+      const errorMsg = err.response?.data?.message || err.response?.data || 'Upload failed. Please try again.';
+      setError(typeof errorMsg === 'string' ? errorMsg : 'Upload failed due to an internal error.');
+      console.error("Upload Error:", err.response || err);
+      if (err.response?.data?.trace) {
+          console.error("Backend Stack Trace:\\n" + err.response.data.trace);
+      }
     } finally {
       setUploading(false);
     }
@@ -82,8 +86,8 @@ const UploadCenter = () => {
       </div>
 
       <div
-        className={`glass rounded-3xl p-10 text-center border-2 border-dashed transition-all duration-300 ${
-          isDragging ? 'border-primary-500 bg-primary-100/50' : 'border-slate-300 hover:border-primary-400'
+        className={`bg-white/40 backdrop-blur-xl rounded-3xl p-10 text-center border-2 border-dashed transition-all duration-500 shadow-sm ${
+          isDragging ? 'border-primary-500 bg-primary-100/50 scale-[1.02] shadow-[0_0_40px_rgba(244,63,94,0.2)]' : 'border-slate-300 hover:border-primary-400 hover:bg-white/60 hover:shadow-lg'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -106,7 +110,7 @@ const UploadCenter = () => {
             <p className="text-slate-500 mb-6">or click below to browse your files</p>
             <button
               onClick={() => fileInputRef.current.click()}
-              className="bg-primary-500 hover:bg-primary-400 text-white font-bold py-3 px-8 rounded-full transition-transform active:scale-95 shadow-glow-primary"
+              className="bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 active:scale-95 shadow-glow-primary hover:shadow-[0_0_25px_rgba(244,63,94,0.6)]"
             >
               Browse Files
             </button>

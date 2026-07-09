@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.MultipartConfigElement;
 
-import org.springframework.boot.servlet.MultipartConfigFactory;
+import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
@@ -13,10 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class AppConfig {
 
-    @Bean
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper();
-    }
+
 
     @Bean
     public WebClient.Builder webClientBuilder() {

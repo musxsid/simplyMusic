@@ -54,6 +54,20 @@ public class MusicController {
         return ResponseEntity.ok(results);
     }
 
+    @GetMapping("/recent")
+    public ResponseEntity<List<MusicMetadata>> getRecentTracks() {
+        return ResponseEntity.ok(musicService.getRecentTracks());
+    }
+
+    @GetMapping("/featured")
+    public ResponseEntity<MusicMetadata> getFeaturedTrack() {
+        MusicMetadata track = musicService.getFeaturedTrack();
+        if (track == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(track);
+    }
+
     @GetMapping("/stream/{id}")
     public ResponseEntity<Void> streamMusic(@PathVariable String id) {
         try {

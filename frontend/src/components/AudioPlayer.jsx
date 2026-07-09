@@ -72,7 +72,7 @@ const AudioPlayer = ({ track }) => {
   return (
     <>
     <div 
-      className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-xl border-t border-slate-200 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 transform transition-transform translate-y-0 cursor-pointer hover:bg-white transition-colors duration-300"
+      className="fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-2xl border-t border-slate-200/50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-50 transform transition-all duration-500 translate-y-0 cursor-pointer hover:bg-white/85 hover:shadow-[0_-10px_50px_rgba(244,63,94,0.1)]"
       onClick={() => setIsExpanded(true)}
     >
       {/* Progress Bar (Full Width Top) */}
@@ -111,7 +111,7 @@ const AudioPlayer = ({ track }) => {
             </button>
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className="bg-primary-500 text-white p-3 rounded-full hover:scale-105 active:scale-95 transition-all shadow-glow-primary hover:bg-primary-400"
+              className="bg-gradient-to-br from-primary-500 to-primary-600 text-white p-3.5 rounded-full hover:scale-110 active:scale-95 transition-all duration-300 shadow-glow-primary hover:shadow-[0_0_30px_rgba(244,63,94,0.6)]"
             >
               {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
             </button>

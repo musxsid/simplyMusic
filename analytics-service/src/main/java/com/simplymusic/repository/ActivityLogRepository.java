@@ -20,4 +20,13 @@ public interface ActivityLogRepository extends MongoRepository<ActivityLog, Stri
             "{ $sort: { lastPlayed: -1 } }"
     })
     List<TrackHistory> getPlaybackHistory();
+
+    @Aggregation(pipeline = {
+            "{ $match: { eventType: 'TRACK_PLAYED' } }",
+            "{ $group: { _id: '$trackId', playCount: { $sum: 1 }, lastPlayed: { $max: '$timestamp' } } }",
+            "{ $project: { trackId: '$_id', playCount: 1, lastPlayed: 1, _id: 0 } }",
+            "{ $sort: { playCount: -1 } }",
+            "{ $limit: 10 }"
+    })
+    List<TrackHistory> getTopTracks();
 }
