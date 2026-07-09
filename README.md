@@ -102,7 +102,4 @@ The application will be accessible at `http://localhost:5173`.
 - **Real-Time Analytics**: View global library statistics and personal playback history via a dedicated analytics dashboard.
 - **Secure Access**: Enterprise-grade identity management with Keycloak protecting your data.
 
-##  Default Credentials
 
-- **Keycloak Admin**: Check your `docker-compose.yml` configuration (usually `admin` / `admin`).
-- **MinIO Console**: Available at `http://localhost:9001` (check your `docker-compose.yml` for access keys).
