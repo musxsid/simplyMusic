@@ -9,6 +9,15 @@ const NowPlayingView = ({
   handleSeek, 
   currentTime, 
   duration,
+  volume,
+  handleVolumeChange,
+  handleSkipBack,
+  handleSkipForward,
+  isRepeating,
+  setIsRepeating,
+  isShuffling,
+  setIsShuffling,
+  ambientColor,
   onClose 
 }) => {
   if (!track) return null;
@@ -21,12 +30,19 @@ const NowPlayingView = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-slate-50 via-primary-50 to-slate-100 animate-gradient-x flex flex-col items-center justify-between p-6 md:p-12 animate-slide-up">
+    <div className="fixed inset-0 z-[200] bg-white/60 dark:bg-slate-900/80 backdrop-blur-3xl flex flex-col items-center justify-between p-6 md:p-12 animate-jelly-popup transition-colors duration-1000 overflow-hidden">
+      {/* Ambient Background layer for NowPlaying */}
+      <div 
+        className="absolute inset-0 transition-colors duration-1000 ease-in-out pointer-events-none z-0 mix-blend-screen dark:mix-blend-lighten"
+        style={{ 
+          background: `radial-gradient(circle at 50% 50%, ${ambientColor?.replace('0.15', '0.4') || 'rgba(244, 63, 94, 0.4)'}, transparent 80%)` 
+        }}
+      />
       {/* Top Header */}
-      <div className="w-full max-w-4xl flex items-center justify-between">
+      <div className="w-full max-w-4xl flex items-center justify-between relative z-10">
         <button 
           onClick={onClose}
-          className="p-3 bg-white/50 backdrop-blur-md rounded-full shadow-sm hover:shadow-neumorphic transition-all duration-300 hover:scale-105 active:scale-95 text-slate-800"
+          className="p-3 bg-white/50 dark:bg-slate-800/50 backdrop-blur-md rounded-full shadow-sm hover:shadow-neumorphic dark:hover:shadow-none transition-all duration-300 hover:scale-105 active:scale-95 text-slate-800 dark:text-slate-100"
         >
           <ChevronDown className="w-6 h-6" />
         </button>
@@ -59,15 +75,15 @@ const NowPlayingView = ({
       </div>
 
       {/* Bottom Controls */}
-      <div className="w-full max-w-2xl bg-white/70 backdrop-blur-2xl p-8 rounded-[3rem] shadow-neumorphic border border-slate-200">
+      <div className="w-full max-w-2xl bg-white/50 dark:bg-slate-800/50 backdrop-blur-2xl p-8 rounded-[3rem] shadow-[0_30px_60px_rgba(0,0,0,0.12)] dark:shadow-[0_30px_60px_rgba(0,0,0,0.4)] border border-white/60 dark:border-slate-700/50 animate-in fade-in slide-in-from-bottom-12 duration-700 delay-100 ease-out-expo fill-mode-both relative z-10">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-black text-slate-800 mb-2 truncate">{track.title}</h2>
-          <p className="text-lg font-medium text-slate-500 truncate">{track.artist}</p>
+          <h2 className="text-3xl font-black text-slate-800 dark:text-slate-100 mb-2 truncate">{track.title}</h2>
+          <p className="text-lg font-medium text-slate-500 dark:text-slate-400 truncate">{track.artist}</p>
         </div>
 
         {/* Scrubber */}
         <div className="mb-8">
-          <div className="relative w-full h-2 bg-slate-200 rounded-full shadow-inner mb-2 group">
+          <div className="relative w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-full shadow-inner mb-2 group">
             <input
               type="range"
               min="0"
@@ -80,7 +96,7 @@ const NowPlayingView = ({
               className="absolute top-0 left-0 h-full bg-primary-500 rounded-full shadow-glow-primary pointer-events-none transition-all duration-100"
               style={{ width: `${progress}%` }}
             >
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-slate-200 rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
             </div>
           </div>
           <div className="flex justify-between text-xs font-semibold text-slate-400">
@@ -91,10 +107,10 @@ const NowPlayingView = ({
 
         {/* Main Controls */}
         <div className="flex items-center justify-center gap-6 md:gap-10">
-          <button className="text-slate-400 hover:text-primary-500 transition-all hover:scale-110 active:scale-95">
+          <button onClick={() => setIsShuffling(!isShuffling)} className={`transition-all hover:scale-110 active:scale-95 ${isShuffling ? 'text-primary-500' : 'text-slate-400 hover:text-primary-500'}`}>
             <Shuffle className="w-5 h-5" />
           </button>
-          <button className="p-3 bg-slate-100 rounded-full shadow-sm text-slate-500 hover:text-primary-500 hover:shadow-neumorphic transition-all hover:scale-110 active:scale-95">
+          <button onClick={handleSkipBack} className="p-3 bg-slate-100 dark:bg-slate-800 rounded-full shadow-sm text-slate-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-400 hover:shadow-neumorphic dark:hover:shadow-none transition-all hover:scale-110 active:scale-95">
             <SkipBack className="w-6 h-6 fill-current" />
           </button>
           <button 
@@ -103,12 +119,31 @@ const NowPlayingView = ({
           >
             {isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
           </button>
-          <button className="p-3 bg-slate-100 rounded-full shadow-sm text-slate-500 hover:text-primary-500 hover:shadow-neumorphic transition-all hover:scale-110 active:scale-95">
+          <button onClick={handleSkipForward} className="p-3 bg-slate-100 dark:bg-slate-800 rounded-full shadow-sm text-slate-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-400 hover:shadow-neumorphic dark:hover:shadow-none transition-all hover:scale-110 active:scale-95">
             <SkipForward className="w-6 h-6 fill-current" />
           </button>
-          <button className="text-slate-400 hover:text-primary-500 transition-all hover:scale-110 active:scale-95">
+          <button onClick={() => setIsRepeating(!isRepeating)} className={`transition-all hover:scale-110 active:scale-95 ${isRepeating ? 'text-primary-500' : 'text-slate-400 hover:text-primary-500'}`}>
             <Repeat className="w-5 h-5" />
           </button>
+        </div>
+
+        {/* Volume Control */}
+        <div className="flex items-center justify-center gap-4 mt-8">
+          <Volume2 className="w-5 h-5 text-slate-400" />
+          <div className="relative w-48 h-2 bg-slate-200 dark:bg-slate-700 rounded-full group shadow-inner">
+            <input 
+              type="range" 
+              min="0" 
+              max="1" 
+              step="0.01" 
+              value={volume} 
+              onChange={handleVolumeChange}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+            />
+            <div className="bg-primary-500 h-full rounded-full relative pointer-events-none" style={{ width: `${volume * 100}%` }}>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-slate-200 rounded-full shadow-md scale-0 group-hover:scale-100 transition-transform"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

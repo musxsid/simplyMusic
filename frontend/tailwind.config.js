@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
@@ -37,6 +38,8 @@ export default {
         'float': 'float 6s ease-in-out infinite',
         'gradient-x': 'gradient-x 15s ease infinite',
         'slide-up': 'slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'jelly-popup': 'jelly-popup 0.65s cubic-bezier(0.25, 1.1, 0.5, 1) forwards',
+        'shimmer': 'shimmer 2s linear infinite',
       },
       keyframes: {
         float: {
@@ -56,6 +59,14 @@ export default {
         'slide-up': {
           '0%': { transform: 'translateY(100%)' },
           '100%': { transform: 'translateY(0)' },
+        },
+        'jelly-popup': {
+          '0%': { transform: 'translateY(40px) scale(0.95)', opacity: '0' },
+          '100%': { transform: 'translateY(0) scale(1)', opacity: '1' },
+        },
+        'shimmer': {
+          '0%': { transform: 'translateX(-150%) skewX(-12deg)' },
+          '100%': { transform: 'translateX(200%) skewX(-12deg)' },
         }
       }
     },

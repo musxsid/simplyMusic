@@ -81,13 +81,13 @@ const UploadCenter = () => {
   return (
     <div className="max-w-2xl mx-auto mt-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight">Upload Center</h1>
-        <p className="text-slate-500 mt-2">Add new tracks to your simplyMusic library. We'll automatically extract the metadata.</p>
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-800 dark:text-slate-100">Upload Center</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">Add new tracks to your simplyMusic library. We'll automatically extract the metadata.</p>
       </div>
 
       <div
-        className={`bg-white/40 backdrop-blur-xl rounded-3xl p-10 text-center border-2 border-dashed transition-all duration-500 shadow-sm ${
-          isDragging ? 'border-primary-500 bg-primary-100/50 scale-[1.02] shadow-[0_0_40px_rgba(244,63,94,0.2)]' : 'border-slate-300 hover:border-primary-400 hover:bg-white/60 hover:shadow-lg'
+        className={`bg-white/40 dark:bg-slate-800/60 backdrop-blur-xl rounded-3xl p-10 text-center border-2 border-dashed transition-all duration-500 shadow-sm ${
+          isDragging ? 'border-primary-500 bg-primary-100/50 dark:bg-primary-900/30 scale-[1.02] shadow-[0_0_40px_rgba(244,63,94,0.2)]' : 'border-slate-300 dark:border-slate-700 hover:border-primary-400 hover:bg-white/60 dark:hover:bg-slate-700/60 hover:shadow-lg'
         }`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -103,29 +103,29 @@ const UploadCenter = () => {
 
         {!file && !metadata && (
           <div className="flex flex-col items-center">
-            <div className="bg-white p-4 rounded-full mb-4 shadow-neumorphic">
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-full mb-4 shadow-neumorphic">
               <UploadCloud className="w-12 h-12 text-primary-500" />
             </div>
-            <h3 className="text-xl font-semibold mb-2">Drag & Drop your audio file</h3>
-            <p className="text-slate-500 mb-6">or click below to browse your files</p>
+            <h3 className="text-xl font-semibold mb-2 text-slate-800 dark:text-slate-100">Drag & Drop your audio file</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-6">or click below to browse your files</p>
             <button
               onClick={() => fileInputRef.current.click()}
               className="bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white font-bold py-3 px-8 rounded-full transition-all duration-300 active:scale-95 shadow-glow-primary hover:shadow-[0_0_25px_rgba(244,63,94,0.6)]"
             >
               Browse Files
             </button>
-            <p className="text-xs text-slate-500 mt-6">Supports MP3, MP4, WAV</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-6">Supports MP3, MP4, WAV</p>
           </div>
         )}
 
         {file && !uploading && !metadata && (
           <div className="flex flex-col items-center">
             <FileAudio className="w-16 h-16 text-primary-300 mb-4" />
-            <p className="text-lg font-medium text-slate-800 mb-6 truncate max-w-xs">{file.name}</p>
+            <p className="text-lg font-medium text-slate-800 dark:text-slate-100 mb-6 truncate max-w-xs">{file.name}</p>
             <div className="flex gap-4">
               <button
                 onClick={() => setFile(null)}
-                className="bg-white hover:bg-slate-50 text-slate-800 font-semibold py-2 px-6 rounded-full transition-colors border border-slate-200 shadow-sm"
+                className="bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold py-2 px-6 rounded-full transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
               >
                 Cancel
               </button>
@@ -142,7 +142,7 @@ const UploadCenter = () => {
         {uploading && (
           <div className="flex flex-col items-center">
             <Loader2 className="w-12 h-12 text-primary-500 animate-spin mb-6" />
-            <div className="w-full bg-slate-200 rounded-full h-3 mb-2 overflow-hidden shadow-inner">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 mb-2 overflow-hidden shadow-inner">
               <div
                 className="bg-gradient-to-r from-primary-600 to-primary-400 h-3 rounded-full transition-all duration-300"
                 style={{ width: `${progress}%` }}
@@ -164,26 +164,26 @@ const UploadCenter = () => {
             <div className="bg-emerald-500/20 p-4 rounded-full mb-4">
               <CheckCircle className="w-12 h-12 text-emerald-500" />
             </div>
-            <h3 className="text-2xl font-bold mb-2">Upload Complete!</h3>
+            <h3 className="text-2xl font-bold mb-2 text-slate-800 dark:text-slate-100">Upload Complete!</h3>
             
-            <div className="w-full text-left bg-white rounded-2xl p-6 mt-4 shadow-sm border border-slate-200">
+            <div className="w-full text-left bg-white dark:bg-slate-800 rounded-2xl p-6 mt-4 shadow-sm border border-slate-200 dark:border-slate-700">
               <h4 className="text-sm uppercase tracking-widest text-primary-500 font-bold mb-4">Extracted Metadata</h4>
               <div className="grid grid-cols-2 gap-y-4 gap-x-8">
                 <div>
-                  <p className="text-xs text-slate-500">Title</p>
-                  <p className="font-medium">{metadata.title || 'Unknown'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Title</p>
+                  <p className="font-medium text-slate-800 dark:text-slate-200">{metadata.title || 'Unknown'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Artist</p>
-                  <p className="font-medium">{metadata.artist || 'Unknown'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Artist</p>
+                  <p className="font-medium text-slate-800 dark:text-slate-200">{metadata.artist || 'Unknown'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Album</p>
-                  <p className="font-medium">{metadata.album || 'Unknown'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Album</p>
+                  <p className="font-medium text-slate-800 dark:text-slate-200">{metadata.album || 'Unknown'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">Year</p>
-                  <p className="font-medium">{metadata.releaseYear || 'Unknown'}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Year</p>
+                  <p className="font-medium text-slate-800 dark:text-slate-200">{metadata.releaseYear || 'Unknown'}</p>
                 </div>
               </div>
             </div>

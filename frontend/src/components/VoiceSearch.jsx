@@ -76,8 +76,8 @@ const VoiceSearch = ({ onMatch }) => {
           isRecording 
             ? 'bg-rose-600 text-white animate-pulse' 
             : isProcessing 
-              ? 'bg-primary-100 text-primary-500 cursor-wait shadow-sm'
-              : 'bg-white border border-slate-200 hover:border-primary-400 text-slate-500 hover:text-primary-500 shadow-neumorphic'
+              ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-500 dark:text-primary-400 cursor-wait shadow-sm'
+              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary-400 text-slate-500 dark:text-slate-400 hover:text-primary-500 dark:hover:text-primary-400 shadow-neumorphic dark:shadow-none'
         }`}
         title="Voice Search (5s)"
       >
@@ -90,9 +90,9 @@ const VoiceSearch = ({ onMatch }) => {
 
       {/* Recording Indicator Toast */}
       {isRecording && (
-        <div className="absolute top-24 right-10 bg-white shadow-lg border border-slate-200 px-4 py-2 rounded-full flex items-center gap-3 animate-in fade-in slide-in-from-top-4 z-50">
+        <div className="absolute top-24 right-10 bg-white dark:bg-slate-800 shadow-lg border border-slate-200 dark:border-slate-700 px-4 py-2 rounded-full flex items-center gap-3 animate-in fade-in slide-in-from-top-4 z-50">
           <div className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></div>
-          <span className="text-sm font-medium text-slate-800">Listening (5s)...</span>
+          <span className="text-sm font-medium text-slate-800 dark:text-slate-100">Listening (5s)...</span>
         </div>
       )}
     </div>

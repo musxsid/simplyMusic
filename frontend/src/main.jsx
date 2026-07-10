@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
 import keycloak from './keycloak';
+import { AudioPipelineProvider } from './context/AudioPipelineContext';
 
 const Main = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -35,7 +36,11 @@ const Main = () => {
     );
   }
 
-  return <App />;
+  return (
+    <AudioPipelineProvider>
+      <App />
+    </AudioPipelineProvider>
+  );
 };
 
 // React.StrictMode has been removed below!

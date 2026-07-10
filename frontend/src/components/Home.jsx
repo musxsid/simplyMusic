@@ -62,7 +62,7 @@ const Home = ({ onPlay }) => {
       <div className="absolute top-40 right-0 w-96 h-96 bg-rose-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-float pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
       <header>
-        <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-800 drop-shadow-sm">
+        <h1 className="text-4xl lg:text-5xl font-black tracking-tight text-slate-800 dark:text-slate-100 drop-shadow-sm">
           {getGreeting()}
         </h1>
       </header>
@@ -88,7 +88,7 @@ const Home = ({ onPlay }) => {
             </p>
             
             <button 
-              onClick={() => onPlay(featuredTrack)}
+              onClick={() => onPlay(featuredTrack, [featuredTrack])}
               className="w-14 h-14 md:w-16 md:h-16 bg-primary-500 text-white rounded-full flex items-center justify-center hover:bg-primary-400 hover:scale-105 active:scale-95 transition-all shadow-glow-primary group-hover:shadow-[0_0_40px_rgba(var(--color-primary-500),0.6)]"
             >
               <Play className="w-6 h-6 md:w-8 md:h-8 fill-current ml-1" />
@@ -101,7 +101,7 @@ const Home = ({ onPlay }) => {
       {recentTracks.length > 0 && (
         <section>
           <div className="flex items-end justify-between mb-6">
-            <h3 className="text-2xl font-bold text-slate-800">Recently Added</h3>
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Recently Added</h3>
             <button onClick={() => navigate('/library')} className="text-primary-600 font-bold text-sm hover:underline flex items-center">
               See all <ChevronRight className="w-4 h-4" />
             </button>
@@ -110,12 +110,12 @@ const Home = ({ onPlay }) => {
             {recentTracks.map(track => (
               <div 
                 key={track.id} 
-                onClick={() => onPlay(track)}
+                onClick={() => onPlay(track, recentTracks)}
                 className="snap-start flex-shrink-0 w-40 md:w-48 group cursor-pointer"
               >
-                <div className="w-full aspect-square bg-gradient-to-br from-slate-200 to-slate-300 rounded-2xl mb-4 relative overflow-hidden shadow-sm group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
+                <div className="w-full aspect-square bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-700 rounded-2xl mb-4 relative overflow-hidden shadow-sm group-hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2">
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <Disc3 className="w-12 h-12 text-slate-400 group-hover:text-primary-500 transition-colors duration-300" />
+                    <Disc3 className="w-12 h-12 text-slate-400 dark:text-slate-500 group-hover:text-primary-500 transition-colors duration-300" />
                   </div>
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
                     <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white shadow-glow-primary transform scale-75 group-hover:scale-100 transition-transform duration-300">
@@ -123,8 +123,8 @@ const Home = ({ onPlay }) => {
                     </div>
                   </div>
                 </div>
-                <h4 className="font-bold text-slate-800 truncate px-1 group-hover:text-primary-600 transition-colors">{track.title}</h4>
-                <p className="text-sm text-slate-500 truncate px-1">{track.artist}</p>
+                <h4 className="font-bold text-slate-800 dark:text-slate-100 truncate px-1 group-hover:text-primary-600 transition-colors">{track.title}</h4>
+                <p className="text-sm text-slate-500 dark:text-slate-400 truncate px-1">{track.artist}</p>
               </div>
             ))}
           </div>
@@ -135,7 +135,7 @@ const Home = ({ onPlay }) => {
       {playlists.length > 0 && (
         <section>
           <div className="flex items-end justify-between mb-6">
-            <h3 className="text-2xl font-bold text-slate-800">Your Playlists</h3>
+            <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Your Playlists</h3>
             <button onClick={() => navigate('/library')} className="text-primary-600 font-bold text-sm hover:underline flex items-center">
               Go to Library <ChevronRight className="w-4 h-4" />
             </button>
@@ -145,14 +145,14 @@ const Home = ({ onPlay }) => {
               <div 
                 key={playlist.id}
                 onClick={() => navigate('/library')}
-                className="bg-white/60 backdrop-blur-md rounded-2xl p-4 flex items-center gap-4 hover:bg-white hover:shadow-md transition-all cursor-pointer border border-slate-100 hover:border-primary-200 group"
+                className="bg-white/60 dark:bg-slate-800/60 backdrop-blur-md rounded-2xl p-4 flex items-center gap-4 hover:bg-white dark:hover:bg-slate-700/60 hover:shadow-md transition-all cursor-pointer border border-slate-100 dark:border-slate-700 hover:border-primary-200 group"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-primary-100 to-primary-200 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
-                  <ListMusic className="w-6 h-6 text-primary-600" />
+                <div className="w-14 h-14 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/50 dark:to-primary-800/50 rounded-xl flex items-center justify-center flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                  <ListMusic className="w-6 h-6 text-primary-600 dark:text-primary-400" />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="font-bold text-slate-800 truncate">{playlist.name}</h4>
-                  <p className="text-xs text-slate-500 font-medium mt-0.5">{playlist.trackIds?.length || 0} tracks</p>
+                  <h4 className="font-bold text-slate-800 dark:text-slate-100 truncate">{playlist.name}</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{playlist.trackIds?.length || 0} tracks</p>
                 </div>
               </div>
             ))}
