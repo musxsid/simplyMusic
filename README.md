@@ -4,7 +4,7 @@ A distributed, enterprise-grade music streaming and cataloging platform built wi
 
 Unlike standard monolithic CRUD applications, simplyMusic is designed for fault tolerance and scalability. It separates heavy media streaming, real-time analytics, and user authentication into isolated, independent microservices running in Docker.
 
-## ✨ Core Architecture & Data Flow
+##  Core Architecture & Data Flow
 
 The system is built on a decoupled microservices architecture to ensure high availability and prevent performance bottlenecks during large file uploads.
 
@@ -35,7 +35,7 @@ graph TD
 5. **Analytics Service:** An isolated Spring Boot microservice that listens to the RabbitMQ message broker. It independently tracks play counts and library metrics in its own database without adding computational load to the main streaming server.
 6. **Enrichment Service:** An external integration layer that identifies audio via voice search or metadata analysis.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 **Frontend**
 * React.js (Vite)
@@ -52,7 +52,7 @@ graph TD
 * RabbitMQ (Message Broker)
 * Keycloak (Identity & Access Management)
 
-## 🚀 Getting Started
+##  Getting Started
 
 To run this project locally, you will need **Docker**, **Java (JDK 17+)**, and **Node.js** installed on your machine.
 
@@ -93,7 +93,7 @@ npm run dev
 
 The application will be accessible at `http://localhost:5173`.
 
-## 🎵 Features
+##  Features
 
 - **Library Management**: Upload and organize your music library. View track details, album art, and duration.
 - **Audio Streaming**: Play your uploaded tracks with a global persistent audio player.
@@ -102,7 +102,4 @@ The application will be accessible at `http://localhost:5173`.
 - **Real-Time Analytics**: View global library statistics and personal playback history via a dedicated analytics dashboard.
 - **Secure Access**: Enterprise-grade identity management with Keycloak protecting your data.
 
-## 🔑 Default Credentials
 
-- **Keycloak Admin**: Check your `docker-compose.yml` configuration (usually `admin` / `admin`).
-- **MinIO Console**: Available at `http://localhost:9001` (check your `docker-compose.yml` for access keys).
