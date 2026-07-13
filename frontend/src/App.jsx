@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Music, Upload, Library, LogOut, Activity, Heart, User, Home as HomeIcon, Sun, Moon, Settings } from 'lucide-react';
-import keycloak from './keycloak';
 import Home from './components/Home';
 import UploadCenter from './components/UploadCenter';
 import MusicExplorer from './components/MusicExplorer';
@@ -9,7 +8,7 @@ import AudioPlayer from './components/AudioPlayer';
 import AnalyticsPanel from './components/AnalyticsPanel';
 import AppSettingsModal from './components/AppSettingsModal';
 
-const NavBar = () => {
+const NavBar = ({ user }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -36,9 +35,9 @@ const NavBar = () => {
     }
   };
 
-  const username = keycloak.tokenParsed?.preferred_username || 'User';
-  const name = keycloak.tokenParsed?.name || username;
-  const email = keycloak.tokenParsed?.email || '';
+  const username = user?.preferred_username || 'User';
+  const name = user?.name || username;
+  const email = user?.email || '';
 
   let activeIndex = 0;
   if (location.pathname === '/library') activeIndex = 1;
@@ -138,7 +137,7 @@ const NavBar = () => {
                 <Settings className="w-4 h-4 group-hover:rotate-90 transition-transform" />
               </button>
               <button 
-                onClick={() => keycloak.logout()} 
+                onClick={() => window.location.href = 'http://localhost:8080/logout'} 
                 className="w-full flex items-center justify-between text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-3 rounded-xl transition-colors font-bold group"
               >
                 Sign Out
@@ -160,7 +159,7 @@ const NavBar = () => {
   );
 };
 
-function App() {
+function App({ user }) {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [currentQueue, setCurrentQueue] = useState([]);
   const [ambientColor, setAmbientColor] = useState('rgba(244, 63, 94, 0.1)'); // Default primary-500 light
@@ -229,7 +228,7 @@ function App() {
         />
 
         <div className="relative z-10 w-full flex flex-col h-full min-h-screen">
-          <NavBar />
+          <NavBar user={user} />
 
         {/* Main Content Area */}
         <main className="flex-1 w-full max-w-7xl mx-auto p-6 lg:p-10 relative">

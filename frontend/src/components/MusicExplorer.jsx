@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Play, Disc3, Clock, Calendar, Heart, Trash2 } from 'lucide-react';
 import api from '../services/api';
 import VoiceSearch from './VoiceSearch';
-import keycloak from '../keycloak';
+
 import PlaylistManager from './PlaylistManager';
 import { ListMusic, Plus } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';

@@ -15,12 +15,8 @@ public class ApiGatewayApplication {
 
     @Bean
     public KeyResolver userKeyResolver() {
-        return exchange -> {
-            var remoteAddress = exchange.getRequest().getRemoteAddress();
-            String ip = (remoteAddress != null && remoteAddress.getAddress() != null) 
-                        ? remoteAddress.getAddress().getHostAddress() 
-                        : "unknown";
-            return Mono.just(ip);
-        };
+        return exchange -> exchange.getPrincipal()
+                .map(java.security.Principal::getName)
+                .defaultIfEmpty("anonymous");
     }
 }

@@ -53,6 +53,9 @@ public class SecurityConfig {
                 return List.of();
             }
             Collection<String> roles = (Collection<String>) realmAccess.get("roles");
+            if (roles == null) {
+                return List.of();
+            }
             return roles.stream()
                     .map(roleName -> "ROLE_" + roleName.toUpperCase())
                     .map(SimpleGrantedAuthority::new)

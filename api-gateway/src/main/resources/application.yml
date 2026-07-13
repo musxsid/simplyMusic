@@ -2,6 +2,22 @@ server:
   port: 8080
 
 spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:9090/realms/simplymusic
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: simplymusic-frontend
+            authorization-grant-type: authorization_code
+            scope: openid, profile, email
+            client-authentication-method: none
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:9090/realms/simplymusic
   codec:
     max-in-memory-size: 100MB
   application:
@@ -25,32 +41,22 @@ spring:
             allowedHeaders: "*"
             allowCredentials: true
 
+      default-filters:
+        - TokenRelay
       routes:
         - id: music-service
           uri: lb://SIMPLYMUSIC
           predicates:
             - Path=/api/v1/music/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 20
-                redis-rate-limiter.burstCapacity: 40
-                redis-rate-limiter.requestedTokens: 1
-                key-resolver: "#{@userKeyResolver}"
 
         - id: analytics-service
-          uri: lb://analytics-service
+          uri: lb://ANALYTICS-SERVICE
           predicates:
             - Path=/api/v1/analytics/**
-          filters:
-            - name: RequestRateLimiter
-              args:
-                redis-rate-limiter.replenishRate: 20
-                redis-rate-limiter.burstCapacity: 40
-                redis-rate-limiter.requestedTokens: 1
-                key-resolver: "#{@userKeyResolver}"
 
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true

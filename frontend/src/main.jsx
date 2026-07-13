@@ -2,20 +2,27 @@ import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
-import keycloak from './keycloak';
+import api from './services/api';
 import { AudioPipelineProvider } from './context/AudioPipelineContext';
 
 const Main = () => {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    keycloak.init({ onLoad: 'login-required', checkLoginIframe: false })
-      .then(auth => {
-        setAuthenticated(auth);
-        setInitialized(true);
+    api.get('/user')
+      .then(response => {
+        if (response.data && response.data.preferred_username) {
+          setUser(response.data);
+          setInitialized(true);
+        } else {
+          window.location.href = 'http://localhost:8080/oauth2/authorization/keycloak';
+        }
       })
-      .catch(console.error);
+      .catch(error => {
+        console.error("Authentication check failed", error);
+        window.location.href = 'http://localhost:8080/oauth2/authorization/keycloak';
+      });
   }, []);
 
   if (!initialized) {
@@ -28,7 +35,7 @@ const Main = () => {
     );
   }
 
-  if (initialized && !authenticated) {
+  if (initialized && !user) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-slate-50 text-rose-500">
         <div className="text-xl">Authentication Failed. Please reload.</div>
@@ -38,7 +45,7 @@ const Main = () => {
 
   return (
     <AudioPipelineProvider>
-      <App />
+      <App user={user} />
     </AudioPipelineProvider>
   );
 };

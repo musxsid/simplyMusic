@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, UploadCloud, PlayCircle, History, Clock, Disc3, Play } from 'lucide-react';
-import keycloak from '../keycloak';
+
 import api from '../services/api';
 
 const AnalyticsPanel = ({ onPlay }) => {
@@ -22,32 +22,16 @@ const AnalyticsPanel = ({ onPlay }) => {
     if (showLoading) setLoading(true);
     try {
       // Fetch stats
-      const statsResponse = await fetch('http://localhost:8080/api/v1/analytics/stats', {
-        headers: {
-          'Authorization': `Bearer ${keycloak.token}`
-        }
-      });
-      if (statsResponse.ok) {
-        setStats(await statsResponse.json());
-      }
+      const statsResponse = await api.get('/analytics/stats');
+      setStats(statsResponse.data);
 
       // Fetch history
-      const historyResponse = await fetch('http://localhost:8080/api/v1/analytics/history', {
-        headers: { 'Authorization': `Bearer ${keycloak.token}` }
-      });
-      let historyData = [];
-      if (historyResponse.ok) {
-        historyData = await historyResponse.json();
-      }
+      const historyResponse = await api.get('/analytics/history');
+      let historyData = historyResponse.data || [];
 
       // Fetch top tracks
-      const topTracksResponse = await fetch('http://localhost:8080/api/v1/analytics/top-tracks', {
-        headers: { 'Authorization': `Bearer ${keycloak.token}` }
-      });
-      let topTracksData = [];
-      if (topTracksResponse.ok) {
-        topTracksData = await topTracksResponse.json();
-      }
+      const topTracksResponse = await api.get('/analytics/top-tracks');
+      let topTracksData = topTracksResponse.data || [];
 
       // Fetch all tracks to map trackIds to metadata
       const tracksResponse = await api.get('/music/search');
