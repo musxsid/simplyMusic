@@ -60,7 +60,11 @@ public class PlaylistController {
         List<MusicMetadata> tracks = new ArrayList<>();
         if (playlist.getTrackIds() != null && !playlist.getTrackIds().isEmpty()) {
             Iterable<MusicMetadata> metadataList = musicMetadataRepository.findAllById(playlist.getTrackIds());
-            metadataList.forEach(tracks::add);
+            metadataList.forEach(track -> {
+                if (track.getUploadedBy().equals(getUserId(jwt))) {
+                    tracks.add(track);
+                }
+            });
         }
 
         PlaylistResponse response = PlaylistResponse.builder()
@@ -77,7 +81,12 @@ public class PlaylistController {
     @PostMapping("/{id}/tracks/{trackId}")
     public ResponseEntity<Playlist> addTrack(@PathVariable String id, @PathVariable String trackId, @AuthenticationPrincipal Jwt jwt) {
         try {
-            Playlist updated = playlistService.addTrackToPlaylist(id, trackId, getUserId(jwt));
+            String userId = getUserId(jwt);
+            MusicMetadata track = musicMetadataRepository.findById(trackId).orElse(null);
+            if (track == null || !track.getUploadedBy().equals(userId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+            Playlist updated = playlistService.addTrackToPlaylist(id, trackId, userId);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();

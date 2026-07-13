@@ -5,6 +5,8 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import api from '../services/api';
 import SortableTrackItem from './SortableTrackItem';
 import SortablePlaylistCard from './SortablePlaylistCard';
+import { useToast } from '../context/ToastContext';
+import AddSongsModal from './AddSongsModal';
 
 const PlaylistManager = ({ onPlay }) => {
   const [playlists, setPlaylists] = useState([]);
@@ -12,6 +14,8 @@ const PlaylistManager = ({ onPlay }) => {
   const [loading, setLoading] = useState(true);
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [isAddSongsModalOpen, setIsAddSongsModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -44,8 +48,10 @@ const PlaylistManager = ({ onPlay }) => {
       setPlaylists([...playlists, response.data]);
       setNewPlaylistName('');
       setIsCreating(false);
+      showToast('Playlist created successfully!', 'success');
     } catch (err) {
       console.error("Failed to create playlist", err);
+      showToast('Failed to create playlist', 'error');
     }
   };
 
@@ -57,8 +63,10 @@ const PlaylistManager = ({ onPlay }) => {
       if (selectedPlaylist && selectedPlaylist.id === id) {
         setSelectedPlaylist(null);
       }
+      showToast('Playlist deleted', 'success');
     } catch (err) {
       console.error("Failed to delete playlist", err);
+      showToast('Failed to delete playlist', 'error');
     }
   };
 
@@ -80,8 +88,10 @@ const PlaylistManager = ({ onPlay }) => {
         ...selectedPlaylist,
         tracks: selectedPlaylist.tracks.filter(t => t.id !== trackId)
       });
+      showToast('Track removed from playlist', 'info');
     } catch (err) {
       console.error("Failed to remove track from playlist", err);
+      showToast('Failed to remove track', 'error');
     }
   };
 
@@ -141,6 +151,15 @@ const PlaylistManager = ({ onPlay }) => {
               {selectedPlaylist.tracks?.length || 0} tracks
             </p>
           </div>
+          <div className="ml-auto">
+            <button 
+              onClick={() => setIsAddSongsModalOpen(true)}
+              className="flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 hover:bg-primary-200 dark:hover:bg-primary-800/40 font-bold py-2 px-4 rounded-xl transition-colors shadow-sm"
+            >
+              <Plus className="w-5 h-5" />
+              Add Songs
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white dark:border-slate-700 shadow-sm rounded-3xl p-6 lg:p-8 relative z-10 mt-4">
@@ -190,6 +209,17 @@ const PlaylistManager = ({ onPlay }) => {
             </>
           )}
         </div>
+        
+        {isAddSongsModalOpen && (
+          <AddSongsModal 
+            playlist={selectedPlaylist} 
+            onClose={() => setIsAddSongsModalOpen(false)} 
+            onTrackAdded={(updatedPlaylist) => {
+              setSelectedPlaylist(updatedPlaylist);
+              showToast('Track added to playlist', 'success');
+            }} 
+          />
+        )}
       </div>
     );
   }
@@ -201,7 +231,7 @@ const PlaylistManager = ({ onPlay }) => {
       {isCreating ? (
         <form 
           onSubmit={createPlaylist}
-          className="flex flex-col items-center justify-center bg-white dark:bg-slate-800 border-2 border-dashed border-primary-300 dark:border-primary-700 rounded-3xl p-6 aspect-square hover:border-primary-500 transition-colors shadow-sm"
+          className="flex flex-col items-center justify-center bg-white dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-3xl p-6 aspect-square hover:border-slate-500 transition-colors shadow-sm"
         >
           <input
             type="text"
@@ -221,7 +251,7 @@ const PlaylistManager = ({ onPlay }) => {
             </button>
             <button 
               type="submit" 
-              className="flex-1 py-2 bg-primary-500 text-white rounded-lg font-bold hover:bg-primary-600 transition-colors"
+              className="flex-1 py-2 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 rounded-lg font-bold hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors"
             >
               Create
             </button>
@@ -230,12 +260,12 @@ const PlaylistManager = ({ onPlay }) => {
       ) : (
         <button 
           onClick={() => setIsCreating(true)}
-          className="flex flex-col items-center justify-center bg-primary-50/50 dark:bg-primary-900/10 border-2 border-dashed border-primary-200 dark:border-primary-800 rounded-3xl p-6 aspect-square hover:bg-primary-50 dark:hover:bg-primary-900/30 hover:border-primary-400 transition-all active:scale-95 group"
+          className="flex flex-col items-center justify-center bg-slate-50/50 dark:bg-slate-900/10 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl p-6 aspect-square hover:bg-slate-50 dark:hover:bg-slate-900/30 hover:border-slate-400 transition-all active:scale-95 group"
         >
           <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
-            <Plus className="w-8 h-8 text-primary-500" />
+            <Plus className="w-8 h-8 text-slate-500" />
           </div>
-          <h3 className="text-xl font-bold text-primary-700 dark:text-primary-400">New Playlist</h3>
+          <h3 className="text-xl font-bold text-slate-700 dark:text-slate-400">New Playlist</h3>
         </button>
       )}
 

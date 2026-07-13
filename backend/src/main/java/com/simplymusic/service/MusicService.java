@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.simplymusic.model.Favourite;
 import com.simplymusic.repository.FavouriteRepository;
+import com.simplymusic.model.Playlist;
+import com.simplymusic.repository.PlaylistRepository;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,19 +24,20 @@ public class MusicService {
     private final MusicMetadataRepository repository;
     private final EventPublisherService eventPublisher;
     private final FavouriteRepository favouriteRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public MusicService(StorageService storageService, MetadataParserService metadataParserService, MusicMetadataRepository repository, EventPublisherService eventPublisher, FavouriteRepository favouriteRepository) {
+    public MusicService(StorageService storageService, MetadataParserService metadataParserService, MusicMetadataRepository repository, EventPublisherService eventPublisher, FavouriteRepository favouriteRepository, PlaylistRepository playlistRepository) {
         this.storageService = storageService;
         this.metadataParserService = metadataParserService;
         this.repository = repository;
         this.eventPublisher = eventPublisher;
         this.favouriteRepository = favouriteRepository;
+        this.playlistRepository = playlistRepository;
     }
 
     public MusicMetadata uploadMusic(MultipartFile file, String userId) throws Exception {
-        // Calculate hash to prevent duplicates
         String fileHash = calculateHash(file.getBytes());
-        Optional<MusicMetadata> existing = repository.findByFileHash(fileHash);
+        Optional<MusicMetadata> existing = repository.findByFileHashAndUploadedBy(fileHash, userId);
         if (existing.isPresent()) {
             return existing.get();
         }
@@ -74,29 +77,33 @@ public class MusicService {
         return saved;
     }
 
-    public List<MusicMetadata> searchMusic(String query) {
+    public List<MusicMetadata> searchMusic(String query, String userId) {
         if (query == null || query.trim().isEmpty()) {
-            return repository.findAll();
+            return repository.findAllByUploadedBy(userId);
         }
-        return repository.findByTitleContainingIgnoreCaseOrArtistContainingIgnoreCaseOrAlbumContainingIgnoreCase(query, query, query);
+        return repository.searchByUploadedByAndQuery(userId, query, query, query);
     }
 
-    public List<MusicMetadata> getRecentTracks() {
-        return repository.findTop10ByOrderByCreatedAtDesc();
+    public List<MusicMetadata> getRecentTracks(String userId) {
+        return repository.findTop10ByUploadedByOrderByCreatedAtDesc(userId);
     }
 
-    public MusicMetadata getFeaturedTrack() {
-        List<MusicMetadata> recent = getRecentTracks();
+    public MusicMetadata getFeaturedTrack(String userId) {
+        List<MusicMetadata> recent = getRecentTracks(userId);
         if (recent.isEmpty()) return null;
         // Simple random selection for featured track from recent tracks
         return recent.get(new java.util.Random().nextInt(recent.size()));
     }
 
-    public String getStreamUrl(String id) throws Exception {
+    public String getStreamUrl(String id, String userId) throws Exception {
         MusicMetadata metadata = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Track not found"));
         
-        eventPublisher.publishEvent("TRACK_PLAYED", id, "anonymous");
+        if (!metadata.getUploadedBy().equals(userId)) {
+            throw new SecurityException("Unauthorized to stream this track");
+        }
+        
+        eventPublisher.publishEvent("TRACK_PLAYED", id, userId);
         
         return storageService.getPresignedUrl(metadata.getFileUrl());
     }
@@ -122,7 +129,9 @@ public class MusicService {
         MusicMetadata metadata = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Track not found"));
 
-        // Ownership is validated by @PreAuthorize in the controller
+        if (!metadata.getUploadedBy().equals(userId)) {
+            throw new SecurityException("Unauthorized to delete this track");
+        }
 
         // Delete from storage
         storageService.deleteFile(metadata.getFileUrl());
@@ -133,11 +142,26 @@ public class MusicService {
         // Delete metadata
         repository.deleteById(id);
 
+        // Remove from all user playlists
+        List<Playlist> userPlaylists = playlistRepository.findByUserId(userId);
+        for (Playlist playlist : userPlaylists) {
+            if (playlist.getTrackIds() != null && playlist.getTrackIds().contains(id)) {
+                playlist.getTrackIds().remove(id);
+                playlistRepository.save(playlist);
+            }
+        }
+
         // Publish event to analytics and other services
         eventPublisher.publishEvent("TRACK_DELETED", id, userId);
     }
 
     public void addFavourite(String trackId, String userId) {
+        MusicMetadata track = repository.findById(trackId)
+                .orElseThrow(() -> new RuntimeException("Track not found"));
+        if (!track.getUploadedBy().equals(userId)) {
+            throw new SecurityException("Unauthorized to favourite this track");
+        }
+
         if (favouriteRepository.findByUserIdAndTrackId(userId, trackId).isEmpty()) {
             Favourite favourite = Favourite.builder()
                     .userId(userId)
@@ -161,6 +185,12 @@ public class MusicService {
         List<String> trackIds = favouriteRepository.findByUserId(userId).stream()
                 .map(Favourite::getTrackId)
                 .toList();
-        return (List<MusicMetadata>) repository.findAllById(trackIds);
+        List<MusicMetadata> tracks = new java.util.ArrayList<>();
+        repository.findAllById(trackIds).forEach(track -> {
+            if (track.getUploadedBy().equals(userId)) {
+                tracks.add(track);
+            }
+        });
+        return tracks;
     }
 }

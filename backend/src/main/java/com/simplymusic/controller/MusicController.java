@@ -49,19 +49,22 @@ public class MusicController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<MusicMetadata>> searchMusic(@RequestParam(value = "query", required = false) String query) {
-        List<MusicMetadata> results = musicService.searchMusic(query);
+    public ResponseEntity<List<MusicMetadata>> searchMusic(@RequestParam(value = "query", required = false) String query, @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getSubject() : "anonymous";
+        List<MusicMetadata> results = musicService.searchMusic(query, userId);
         return ResponseEntity.ok(results);
     }
 
     @GetMapping("/recent")
-    public ResponseEntity<List<MusicMetadata>> getRecentTracks() {
-        return ResponseEntity.ok(musicService.getRecentTracks());
+    public ResponseEntity<List<MusicMetadata>> getRecentTracks(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getSubject() : "anonymous";
+        return ResponseEntity.ok(musicService.getRecentTracks(userId));
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<MusicMetadata> getFeaturedTrack() {
-        MusicMetadata track = musicService.getFeaturedTrack();
+    public ResponseEntity<MusicMetadata> getFeaturedTrack(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getSubject() : "anonymous";
+        MusicMetadata track = musicService.getFeaturedTrack(userId);
         if (track == null) {
             return ResponseEntity.notFound().build();
         }
@@ -69,12 +72,11 @@ public class MusicController {
     }
 
     @GetMapping("/stream/{id}")
-    public ResponseEntity<Void> streamMusic(@PathVariable String id) {
+    public ResponseEntity<java.util.Map<String, String>> streamMusic(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
         try {
-            String presignedUrl = musicService.getStreamUrl(id);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create(presignedUrl))
-                    .build();
+            String userId = jwt != null ? jwt.getSubject() : "anonymous";
+            String presignedUrl = musicService.getStreamUrl(id, userId);
+            return ResponseEntity.ok(java.util.Map.of("url", presignedUrl));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -98,7 +100,6 @@ public class MusicController {
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER') and @securityService.isTrackOwner(#id, #jwt.subject))")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMusic(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
         try {

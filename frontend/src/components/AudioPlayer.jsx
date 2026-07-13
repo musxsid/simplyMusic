@@ -26,9 +26,8 @@ const AudioPlayer = ({ track, queue, onNext, onPrev, ambientColor }) => {
     if (track) {
       const fetchStreamUrl = async () => {
         try {
-          const blobResponse = await api.get(`/music/stream/${track.id}`, { responseType: 'blob' });
-          const url = URL.createObjectURL(blobResponse.data);
-          setStreamUrl(url);
+          const response = await api.get(`/music/stream/${track.id}`);
+          setStreamUrl(response.data.url);
         } catch (error) {
           console.error("Failed to load audio stream", error);
         }

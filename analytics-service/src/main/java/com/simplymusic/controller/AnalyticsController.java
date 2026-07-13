@@ -24,21 +24,43 @@ public class AnalyticsController {
         this.mongoTemplate = mongoTemplate;
     }
 
-    @GetMapping("/stats")
-    public ResponseEntity<StatsResponse> getStats() {
-        // Fetch exact count of tracks directly from the shared music_metadata collection
-        long totalUploads = mongoTemplate.getCollection("music_metadata").countDocuments();
+    private String extractUserId(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            String token = authHeader.substring(7);
+            try {
+                String[] chunks = token.split("\\.");
+                if (chunks.length > 1) {
+                    String payload = new String(java.util.Base64.getUrlDecoder().decode(chunks[1]));
+                    com.fasterxml.jackson.databind.JsonNode node = new com.fasterxml.jackson.databind.ObjectMapper().readTree(payload);
+                    return node.has("sub") ? node.get("sub").asText() : "anonymous";
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        return "anonymous";
+    }
 
-        // Get all active track IDs
+    @GetMapping("/stats")
+    public ResponseEntity<StatsResponse> getStats(@org.springframework.web.bind.annotation.RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String userId = extractUserId(authHeader);
+        
+        // Fetch exact count of tracks directly from the shared music_metadata collection for this user
+        long totalUploads = mongoTemplate.getCollection("music_metadata").countDocuments(new Document("uploadedBy", userId));
+
+        // Get all active track IDs for this user
         java.util.List<String> activeTrackIds = new java.util.ArrayList<>();
-        mongoTemplate.getCollection("music_metadata").find().forEach(doc -> {
+        mongoTemplate.getCollection("music_metadata").find(new Document("uploadedBy", userId)).forEach(doc -> {
             activeTrackIds.add(doc.getObjectId("_id").toHexString());
         });
 
         // Count plays only for active tracks
-        Query query = new Query();
-        query.addCriteria(Criteria.where("eventType").is("TRACK_PLAYED").and("trackId").in(activeTrackIds));
-        long totalPlays = mongoTemplate.count(query, com.simplymusic.model.ActivityLog.class);
+        long totalPlays = 0;
+        if (!activeTrackIds.isEmpty()) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("eventType").is("TRACK_PLAYED").and("userId").is(userId).and("trackId").in(activeTrackIds));
+            totalPlays = mongoTemplate.count(query, com.simplymusic.model.ActivityLog.class);
+        }
 
         return ResponseEntity.ok(StatsResponse.builder()
                 .totalUploads(totalUploads)
@@ -47,13 +69,15 @@ public class AnalyticsController {
     }
 
     @GetMapping("/history")
-    public ResponseEntity<java.util.List<com.simplymusic.model.TrackHistory>> getHistory() {
-        return ResponseEntity.ok(repository.getPlaybackHistory());
+    public ResponseEntity<java.util.List<com.simplymusic.model.TrackHistory>> getHistory(@org.springframework.web.bind.annotation.RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String userId = extractUserId(authHeader);
+        return ResponseEntity.ok(repository.getPlaybackHistory(userId));
     }
 
     @GetMapping("/top-tracks")
-    public ResponseEntity<java.util.List<com.simplymusic.model.TrackHistory>> getTopTracks() {
-        return ResponseEntity.ok(repository.getTopTracks());
+    public ResponseEntity<java.util.List<com.simplymusic.model.TrackHistory>> getTopTracks(@org.springframework.web.bind.annotation.RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String userId = extractUserId(authHeader);
+        return ResponseEntity.ok(repository.getTopTracks(userId));
     }
 
     @Data

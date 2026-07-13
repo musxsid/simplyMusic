@@ -7,6 +7,8 @@ import MusicExplorer from './components/MusicExplorer';
 import AudioPlayer from './components/AudioPlayer';
 import AnalyticsPanel from './components/AnalyticsPanel';
 import AppSettingsModal from './components/AppSettingsModal';
+import UserProfileModal from './components/UserProfileModal';
+import { ToastProvider } from './context/ToastContext';
 
 const NavBar = ({ user }) => {
   const location = useLocation();
@@ -14,6 +16,8 @@ const NavBar = ({ user }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     // Check local storage or system preference on mount
@@ -53,8 +57,9 @@ const NavBar = ({ user }) => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 px-4 lg:px-8 py-4 flex items-center justify-between mb-8 transition-all">
-      {/* Left: Logo */}
+    <>
+      <nav className="sticky top-0 z-50 w-full bg-slate-50/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50 px-4 lg:px-8 py-4 flex items-center justify-between mb-8 transition-all">
+        {/* Left: Logo */}
       <div className="flex items-center gap-3 w-auto lg:w-1/4 group cursor-pointer" onClick={() => navigate('/')}>
         <div className="bg-gradient-to-br from-primary-400 to-primary-600 p-2.5 rounded-2xl text-white shadow-lg shadow-primary-500/30 hidden sm:flex items-center justify-center transform transition-all duration-300 group-hover:scale-105 group-hover:rotate-3 group-hover:shadow-primary-500/50 relative overflow-hidden">
           <div className="absolute inset-0 bg-white/20 w-full h-full -skew-x-12 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
@@ -117,8 +122,14 @@ const NavBar = ({ user }) => {
 
           {isProfileOpen && (
             <div className="absolute top-14 right-0 w-64 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="flex items-center gap-3 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4">
-                <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center flex-shrink-0">
+              <div 
+                className="flex items-center gap-3 mb-4 border-b border-slate-100 dark:border-slate-800 pb-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-2 -mx-2 rounded-xl transition-colors"
+                onClick={() => {
+                  setIsProfileOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
+              >
+                <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm border border-primary-200/50 dark:border-primary-800/50">
                   <span className="font-extrabold text-xl">{name.charAt(0).toUpperCase()}</span>
                 </div>
                 <div className="flex flex-col min-w-0">
@@ -137,7 +148,10 @@ const NavBar = ({ user }) => {
                 <Settings className="w-4 h-4 group-hover:rotate-90 transition-transform" />
               </button>
               <button 
-                onClick={() => window.location.href = 'http://localhost:8080/logout'} 
+                onClick={() => {
+                  setIsProfileOpen(false);
+                  setIsLogoutModalOpen(true);
+                }} 
                 className="w-full flex items-center justify-between text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 p-3 rounded-xl transition-colors font-bold group"
               >
                 Sign Out
@@ -145,9 +159,10 @@ const NavBar = ({ user }) => {
               </button>
             </div>
           )}
+          </div>
         </div>
-      </div>
-      
+      </nav>
+
       {/* Settings Modal */}
       <AppSettingsModal 
         isOpen={isSettingsOpen} 
@@ -155,7 +170,48 @@ const NavBar = ({ user }) => {
         isDarkMode={isDarkMode} 
         toggleDarkMode={toggleDarkMode} 
       />
-    </nav>
+
+      {/* User Profile Modal */}
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={user}
+      />
+
+      {/* Logout Confirmation Modal */}
+      {isLogoutModalOpen && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in" onClick={() => setIsLogoutModalOpen(false)}>
+          <div 
+            className="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-sm w-full shadow-2xl border border-slate-200 dark:border-slate-700 text-center animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-16 h-16 bg-rose-100 dark:bg-rose-900/30 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+              <LogOut className="w-8 h-8 ml-1" />
+            </div>
+            <h3 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-2">Sign Out?</h3>
+            <p className="text-slate-500 dark:text-slate-400 mb-8">
+              Are you sure you want to sign out of your account?
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => setIsLogoutModalOpen(false)}
+                className="flex-1 py-3 px-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-200 font-bold rounded-xl transition-all active:scale-95"
+              >
+                Cancel
+              </button>
+              <form method="POST" action="http://localhost:8080/logout" className="flex-1 flex">
+                <button 
+                  type="submit"
+                  className="w-full py-3 px-4 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-xl shadow-[0_0_15px_rgba(244,63,94,0.4)] transition-all active:scale-95"
+                >
+                  Sign Out
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
@@ -214,46 +270,56 @@ function App({ user }) {
     }
   };
 
+  const handleDeleteTrack = (trackId) => {
+    if (currentTrack && currentTrack.id === trackId) {
+      setCurrentTrack(null);
+      setCurrentQueue([]);
+      setAmbientColor('rgba(244, 63, 94, 0.1)');
+    }
+  };
+
   return (
-    <Router>
-      <div 
-        className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-800 dark:text-slate-100 relative pb-24 transition-colors duration-1000 overflow-hidden"
-      >
-        {/* Dynamic Ambient Background layer */}
+    <ToastProvider>
+      <Router>
         <div 
-          className="absolute inset-0 transition-colors duration-1000 ease-in-out pointer-events-none z-0"
-          style={{ 
-            background: `radial-gradient(circle at 50% 0%, ${ambientColor}, transparent 70%)` 
-          }}
-        />
-
-        <div className="relative z-10 w-full flex flex-col h-full min-h-screen">
-          <NavBar user={user} />
-
-        {/* Main Content Area */}
-        <main className="flex-1 w-full max-w-7xl mx-auto p-6 lg:p-10 relative">
-          <Routes>
-            <Route path="/" element={<Home onPlay={handlePlay} />} />
-            <Route path="/library" element={<MusicExplorer onPlay={handlePlay} />} />
-            <Route path="/upload" element={<UploadCenter />} />
-            <Route path="/analytics" element={<AnalyticsPanel onPlay={handlePlay} />} />
-          </Routes>
-        </main>
-
-        </div>
-        
-        {/* Global Player */}
-        <div className="relative z-50">
-          <AudioPlayer 
-            track={currentTrack} 
-            queue={currentQueue}
-            onNext={handleNext}
-            onPrev={handlePrev}
-            ambientColor={ambientColor}
+          className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans text-slate-800 dark:text-slate-100 relative pb-24 transition-colors duration-1000 overflow-hidden"
+        >
+          {/* Dynamic Ambient Background layer */}
+          <div 
+            className="absolute inset-0 transition-colors duration-1000 ease-in-out pointer-events-none z-0"
+            style={{ 
+              background: `radial-gradient(circle at 50% 0%, ${ambientColor}, transparent 70%)` 
+            }}
           />
+
+          <div className="relative z-10 w-full flex flex-col h-full min-h-screen">
+            <NavBar user={user} />
+
+          {/* Main Content Area */}
+          <main className="flex-1 w-full max-w-7xl mx-auto p-6 lg:p-10 relative">
+            <Routes>
+              <Route path="/" element={<Home onPlay={handlePlay} />} />
+              <Route path="/library" element={<MusicExplorer onPlay={handlePlay} onDelete={handleDeleteTrack} />} />
+              <Route path="/upload" element={<UploadCenter />} />
+              <Route path="/analytics" element={<AnalyticsPanel onPlay={handlePlay} />} />
+            </Routes>
+          </main>
+
+          </div>
+          
+          {/* Global Player */}
+          <div className="relative z-50">
+            <AudioPlayer 
+              track={currentTrack} 
+              queue={currentQueue}
+              onNext={handleNext}
+              onPrev={handlePrev}
+              ambientColor={ambientColor}
+            />
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </ToastProvider>
   );
 }
 

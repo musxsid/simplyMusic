@@ -8,8 +8,9 @@ import { ListMusic, Plus } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import SortableLibraryTrackItem from './SortableLibraryTrackItem';
+import { useToast } from '../context/ToastContext';
 
-const MusicExplorer = ({ onPlay }) => {
+const MusicExplorer = ({ onPlay, onDelete }) => {
   const [tracks, setTracks] = useState([]);
   const [favourites, setFavourites] = useState(new Set());
   const [query, setQuery] = useState('');
@@ -22,6 +23,7 @@ const MusicExplorer = ({ onPlay }) => {
   const [trackToAdd, setTrackToAdd] = useState(null);
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
+  const { showToast } = useToast();
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -85,14 +87,17 @@ const MusicExplorer = ({ onPlay }) => {
         const nextFavs = new Set(favourites);
         nextFavs.delete(trackId);
         setFavourites(nextFavs);
+        showToast('Removed from favourites', 'removed');
       } else {
         await api.post(`/music/${trackId}/favourite`);
         const nextFavs = new Set(favourites);
         nextFavs.add(trackId);
         setFavourites(nextFavs);
+        showToast('Added to favourites', 'success');
       }
     } catch (err) {
       console.error("Failed to toggle favourite", err);
+      showToast('Failed to update favourites', 'error');
     }
   };
 
@@ -101,14 +106,15 @@ const MusicExplorer = ({ onPlay }) => {
     try {
       await api.delete(`/music/${trackToDelete.id}`);
       removeTrackFromState(trackToDelete.id);
+      if (onDelete) onDelete(trackToDelete.id);
+      showToast('Track deleted successfully', 'success');
     } catch (err) {
       if (err.response && err.response.status === 404) {
         console.warn("Track already deleted from database, removing from UI.");
         removeTrackFromState(trackToDelete.id);
       } else {
-        console.error("SERVER ERROR DETAILS:", err.response?.data);
-        alert("Server Error Details:\n" + err.response?.data);
         console.error("Failed to delete track", err);
+        showToast('Failed to delete track. Ensure you own this track.', 'error');
       }
     }
   };
@@ -146,9 +152,10 @@ const MusicExplorer = ({ onPlay }) => {
       await api.post(`/music/playlists/${playlistId}/tracks/${trackToAdd.id}`);
       setIsPlaylistModalOpen(false);
       setTrackToAdd(null);
-      // Optional: show a success toast here
+      showToast('Added to playlist successfully', 'success');
     } catch (err) {
       console.error("Failed to add track to playlist", err);
+      showToast('Failed to add to playlist', 'error');
     }
   };
 
@@ -258,7 +265,7 @@ const MusicExplorer = ({ onPlay }) => {
       ) : activeTab === 'playlists' ? (
         <PlaylistManager onPlay={onPlay} />
       ) : displayedTracks.length === 0 ? (
-        <div className="glass dark:bg-slate-800/60 dark:border-slate-700 rounded-3xl p-16 text-center animate-in fade-in zoom-in duration-500">
+        <div className="bg-white/40 dark:bg-slate-800/60 backdrop-blur-xl border border-white dark:border-slate-700 rounded-3xl p-16 text-center animate-in fade-in zoom-in duration-500 shadow-sm">
           {activeTab === 'favourites' ? (
             <>
               <Heart className="w-16 h-16 text-rose-300 mx-auto mb-4 opacity-70" />
@@ -276,15 +283,16 @@ const MusicExplorer = ({ onPlay }) => {
       ) : (
         <div className="flex flex-col animate-in fade-in duration-500 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border border-white dark:border-slate-700 shadow-sm rounded-3xl p-6 lg:p-8 relative z-10">
           {/* Header row */}
-          <div className="hidden md:flex items-center px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 mb-4">
-            <div className="w-12 text-center">#</div>
+          <div className="hidden md:flex items-center gap-4 px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-700 mb-4">
+            <div className="w-10"></div> {/* Space for drag handle */}
+            <div className="w-8 text-center">#</div>
             <div className="flex-1">Title</div>
             <div className="flex-1 hidden lg:block">Album</div>
             <div className="w-32 hidden xl:block">Date Added</div>
             <div className="w-16 text-center">
               <Clock className="w-4 h-4 mx-auto" />
             </div>
-            <div className="w-24"></div>
+            <div className="w-32 px-2"></div>
           </div>
 
           {/* Track list */}

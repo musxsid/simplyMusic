@@ -1,0 +1,220 @@
+/* Custom Keycloak Theme for simplyMusic */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  --pf-c-background-image--BackgroundImage: none !important;
+  --pf-c-background-image--BackgroundImage-2x: none !important;
+  --pf-c-background-image--BackgroundImage-sm: none !important;
+  --pf-c-background-image--BackgroundImage-sm-2x: none !important;
+  --pf-c-background-image--BackgroundImage-lg: none !important;
+}
+
+/* Completely override body background */
+body, .login-pf body, .pf-c-background-image {
+    background: #020617 !important; /* slate-950 */
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(244, 63, 94, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%) !important;
+    background-attachment: fixed !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    color: #f1f5f9 !important;
+}
+
+/* Hide PatternFly SVG background */
+.pf-c-background-image::before {
+    display: none !important;
+}
+
+/* Main Container */
+.login-pf-page, .pf-c-login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background: transparent !important;
+}
+
+/* Hide the default logo text */
+#kc-header, .pf-c-login__header {
+    display: none !important;
+}
+
+/* Inject simplyMusic Logo */
+.pf-c-login::before {
+    content: 'simplyMusic';
+    display: block;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 900;
+    margin-bottom: 2rem;
+    background: linear-gradient(to right, #ffffff 40%, #f43f5e 60%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.05em;
+}
+
+/* Card */
+.pf-c-login__main, .card-pf, .kc-login-card {
+    background: rgba(30, 41, 59, 0.6) !important; /* slate-800/60 */
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid rgba(51, 65, 85, 0.8) !important; /* border-slate-700 */
+    border-radius: 1.5rem !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+    padding: 3rem !important;
+    max-width: 480px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+/* Header inside card */
+.pf-c-login__main-header, #kc-header-wrapper {
+    text-align: center !important;
+    margin-bottom: 2rem !important;
+    grid-template-columns: 1fr !important; /* PatternFly fix */
+}
+
+.pf-c-title, #kc-page-title {
+    color: #f8fafc !important; /* slate-50 */
+    font-size: 1.75rem !important; 
+    font-weight: 800 !important;
+}
+
+.pf-c-login__main-header-desc {
+    color: #94a3b8 !important;
+    font-size: 1rem !important;
+}
+
+/* Form Groups */
+.pf-c-form__group, .form-group {
+    margin-bottom: 1.5rem !important;
+}
+
+/* Labels */
+.pf-c-form__label, .control-label, .pf-c-form__label-text {
+    color: #94a3b8 !important; /* slate-400 */
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    margin-bottom: 0.5rem !important;
+    display: block !important;
+}
+
+/* Inputs */
+.pf-c-form-control, input.pf-c-form-control, .form-control {
+    background: rgba(15, 23, 42, 0.5) !important; /* slate-900/50 */
+    border: 1px solid rgba(51, 65, 85, 0.8) !important; /* border-slate-700 */
+    color: #f8fafc !important; /* slate-50 */
+    border-radius: 0.75rem !important;
+    padding: 0.875rem 1rem !important;
+    font-size: 1rem !important;
+    transition: all 0.2s ease !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.pf-c-form-control:focus, input.pf-c-form-control:focus, .form-control:focus {
+    border-color: #f43f5e !important; /* rose-500 */
+    box-shadow: 0 0 0 2px rgba(244, 63, 94, 0.2) !important;
+    outline: none !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* Buttons */
+.pf-c-button.pf-m-primary, .btn-primary, input[type="submit"] {
+    background: #f43f5e !important; /* rose-500 */
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    border-radius: 0.75rem !important;
+    padding: 1rem 1.5rem !important;
+    border: none !important;
+    transition: all 0.2s ease !important;
+    width: 100% !important;
+    margin-top: 1rem !important;
+    cursor: pointer !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.2), 0 2px 4px -1px rgba(244, 63, 94, 0.1) !important;
+}
+
+.pf-c-button.pf-m-primary:hover, .btn-primary:hover, input[type="submit"]:hover {
+    background: #e11d48 !important; /* rose-600 */
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.3), 0 4px 6px -2px rgba(244, 63, 94, 0.2) !important;
+}
+
+.pf-c-button.pf-m-primary:active, .btn-primary:active, input[type="submit"]:active {
+    transform: translateY(0) !important;
+}
+
+/* Password Eye Icon toggle */
+.pf-c-button.pf-m-control {
+    background: transparent !important;
+    border: none !important;
+    color: #64748b !important; /* slate-500 */
+    margin-top: 0 !important;
+    box-shadow: none !important;
+}
+.pf-c-button.pf-m-control:hover {
+    color: #f8fafc !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+.pf-c-input-group {
+    background: transparent !important;
+}
+
+/* Links */
+a, .pf-c-login__main-footer-links a {
+    color: #fb7185 !important; /* rose-400 */
+    text-decoration: none !important;
+    transition: color 0.2s !important;
+    font-weight: 500 !important;
+}
+
+a:hover {
+    color: #f43f5e !important; /* rose-500 */
+    text-decoration: underline !important;
+}
+
+/* Checkbox */
+.pf-c-check__label {
+    color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Alerts */
+.pf-c-alert {
+    border-radius: 0.75rem !important;
+    border: 1px solid transparent !important;
+    padding: 1rem !important;
+    margin-bottom: 1.5rem !important;
+}
+
+.pf-c-alert.pf-m-danger {
+    background: rgba(225, 29, 72, 0.1) !important;
+    border-color: rgba(225, 29, 72, 0.2) !important;
+    color: #ffe4e6 !important;
+}
+
+.pf-c-alert.pf-m-danger .pf-c-alert__icon {
+    color: #f43f5e !important;
+}
+
+.pf-c-alert.pf-m-danger .pf-c-alert__title {
+    color: #ffe4e6 !important;
+}
+
+/* Layout adjustments */
+.pf-c-login__main-body {
+    padding: 0 !important;
+}
+.pf-c-login__main-footer {
+    padding: 0 !important;
+    margin-top: 1.5rem !important;
+}
+
+/* Remove weird lines in header */
+.pf-c-login__main-header-utilities {
+    display: none !important;
+}

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud, FileAudio, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../services/api';
+import { useToast } from '../context/ToastContext';
 
 const UploadCenter = () => {
   const [isDragging, setIsDragging] = useState(false);
@@ -10,6 +11,7 @@ const UploadCenter = () => {
   const [metadata, setMetadata] = useState(null);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
+  const { showToast } = useToast();
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -66,9 +68,11 @@ const UploadCenter = () => {
       });
       setMetadata(response.data);
       setFile(null);
+      showToast('Track uploaded successfully!', 'success');
     } catch (err) {
       const errorMsg = err.response?.data?.message || err.response?.data || 'Upload failed. Please try again.';
       setError(typeof errorMsg === 'string' ? errorMsg : 'Upload failed due to an internal error.');
+      showToast('Upload failed!', 'error');
       console.error("Upload Error:", err.response || err);
       if (err.response?.data?.trace) {
           console.error("Backend Stack Trace:\\n" + err.response.data.trace);

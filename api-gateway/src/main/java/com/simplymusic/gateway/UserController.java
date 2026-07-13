@@ -23,6 +23,7 @@ public class UserController {
             userDetails.put("name", oauth2User.getAttribute("name"));
             userDetails.put("preferred_username", oauth2User.getAttribute("preferred_username"));
             userDetails.put("email", oauth2User.getAttribute("email"));
+            userDetails.put("sub", oauth2User.getAttribute("sub"));
         }
         return userDetails;
     }
