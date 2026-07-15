@@ -35,6 +35,7 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                 .authenticationSuccessHandler(new org.springframework.security.web.server.authentication.RedirectServerAuthenticationSuccessHandler("http://localhost:5173"))
+                .authenticationFailureHandler(new org.springframework.security.web.server.authentication.RedirectServerAuthenticationFailureHandler("http://localhost:5173/"))
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
             .logout(logout -> logout

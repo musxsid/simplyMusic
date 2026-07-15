@@ -52,15 +52,26 @@ graph TD
 * RabbitMQ (Message Broker)
 * Keycloak (Identity & Access Management)
 
-##  Getting Started
+## 🚀 Getting Started
 
 To run this project locally, you will need **Docker**, **Java (JDK 17+)**, and **Node.js** installed on your machine.
 
 ### 1. Boot up the Infrastructure
-Navigate to the root directory and start the core infrastructure components (Keycloak, MinIO, MongoDB, RabbitMQ) using Docker Compose:
-```bash
-docker-compose up -d
-```
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd simplyMusic
+   ```
+2. Set up your environment variables by copying the example file:
+   ```bash
+   cp .env.example .env
+   ```
+3. Open the `.env` file and fill in your own secure passwords.
+4. Start the core infrastructure components (Keycloak, MinIO, MongoDB, RabbitMQ, Redis) using Docker Compose:
+   ```bash
+   docker-compose up -d
+   ```
 
 ### 2. Start the Backend Microservices
 Open separate terminal windows to run each Spring Boot microservice:

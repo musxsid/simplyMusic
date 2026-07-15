@@ -4,6 +4,8 @@ import com.simplymusic.model.MusicMetadata;
 import com.simplymusic.repository.MusicMetadataRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.simplymusic.model.Favourite;
 import com.simplymusic.repository.FavouriteRepository;
@@ -18,6 +20,8 @@ import java.util.Optional;
 
 @Service
 public class MusicService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MusicService.class);
 
     private final StorageService storageService;
     private final MetadataParserService metadataParserService;
@@ -67,7 +71,19 @@ public class MusicService {
                 .createdAt(java.time.Instant.now())
                 .build();
 
-        MusicMetadata saved = repository.save(metadata);
+        MusicMetadata saved;
+        try {
+            saved = repository.save(metadata);
+        } catch (Exception e) {
+            // Compensating transaction: rollback MinIO upload if MongoDB save fails
+            try {
+                storageService.deleteFile(objectName);
+                logger.info("Successfully rolled back MinIO upload for file: {}", objectName);
+            } catch (Exception rollbackEx) {
+                logger.error("CRITICAL: Failed to rollback MinIO file after MongoDB failure: {}", objectName, rollbackEx);
+            }
+            throw new RuntimeException("Failed to save track metadata. Upload rolled back.", e);
+        }
 
         // Delete temp file
         tempFile.delete();
@@ -133,22 +149,26 @@ public class MusicService {
             throw new SecurityException("Unauthorized to delete this track");
         }
 
-        // Delete from storage
-        storageService.deleteFile(metadata.getFileUrl());
-
-        // Delete favourites
+        // Delete favourites (MongoDB) FIRST
         favouriteRepository.deleteByTrackId(id);
 
-        // Delete metadata
-        repository.deleteById(id);
-
-        // Remove from all user playlists
+        // Remove from all user playlists (MongoDB)
         List<Playlist> userPlaylists = playlistRepository.findByUserId(userId);
         for (Playlist playlist : userPlaylists) {
             if (playlist.getTrackIds() != null && playlist.getTrackIds().contains(id)) {
                 playlist.getTrackIds().remove(id);
                 playlistRepository.save(playlist);
             }
+        }
+
+        // Delete metadata (MongoDB)
+        repository.deleteById(id);
+
+        // Delete from storage (MinIO) LAST
+        try {
+            storageService.deleteFile(metadata.getFileUrl());
+        } catch (Exception e) {
+            logger.warn("WARNING: Failed to delete MinIO file during track deletion (orphaned file): {}", metadata.getFileUrl(), e);
         }
 
         // Publish event to analytics and other services

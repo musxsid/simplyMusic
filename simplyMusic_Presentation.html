@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>simplyMusic Architecture</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Reveal.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/night.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .reveal {
+            background-color: #0f172a;
+            background-image: radial-gradient(at 0% 0%, rgba(244, 63, 94, 0.15) 0px, transparent 50%),
+                              radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%);
+        }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            font-family: 'Inter', sans-serif;
+            text-transform: none;
+            letter-spacing: -0.02em;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-image: linear-gradient(to bottom right, #6366f1, #f43f5e);
+        }
+        .fragment.fade-up {
+            transition: all 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- Slide 1 -->
+            <section data-auto-animate data-transition="zoom">
+                <div class="glass-card">
+                    <h1 class="text-7xl font-extrabold mb-4">
+                        <span class="text-white">simply</span><span class="text-gradient">Music</span>
+                    </h1>
+                    <h3 class="text-2xl text-slate-300 font-medium mt-4">Secure, Scalable Audio Streaming</h3>
+                    <p class="text-slate-400 mt-8 text-lg">Architecture & Security Overhaul Presentation</p>
+                </div>
+            </section>
+
+            <!-- Slide 2 -->
+            <section data-auto-animate data-transition="slide">
+                <h2 class="text-gradient font-bold mb-10 text-5xl">The Vision</h2>
+                <div class="grid grid-cols-2 gap-8 text-left">
+                    <div class="glass-card fragment fade-up">
+                        <h4 class="text-2xl text-white font-bold mb-4">💎 Premium Usability</h4>
+                        <p class="text-slate-300 text-lg">React & Tailwind CSS Frontend delivering a fluid, glassmorphic UI with dynamic Light/Dark mode sync.</p>
+                    </div>
+                    <div class="glass-card fragment fade-up" data-fragment-index="1">
+                        <h4 class="text-2xl text-white font-bold mb-4">🔐 Zero-Trust Security</h4>
+                        <p class="text-slate-300 text-lg">Centralized Keycloak Identity Management with completely seamless, custom-themed login and registration.</p>
+                    </div>
+                    <div class="glass-card fragment fade-up col-span-2" data-fragment-index="2">
+                        <h4 class="text-2xl text-white font-bold mb-4">🚀 Microservices Core</h4>
+                        <p class="text-slate-300 text-lg">Spring Boot ecosystem powered by Eureka Discovery, API Gateway routing, and stateless backend services.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 3 -->
+            <section data-auto-animate data-transition="slide">
+                <h2 class="text-rose-500 font-bold mb-10 text-5xl">Initial Architecture & Threats</h2>
+                <div class="glass-card text-left">
+                    <ul class="space-y-6 text-xl text-slate-300">
+                        <li class="fragment fade-up">
+                            <span class="text-rose-400 font-bold">Threat:</span> CORS Misconfiguration & Direct API Exposure.<br>
+                            <span class="text-emerald-400 font-bold">Fix:</span> Implemented Spring Cloud API Gateway as the single, strict entry point.
+                        </li>
+                        <li class="fragment fade-up">
+                            <span class="text-rose-400 font-bold">Threat:</span> Hardcoded Users & Data Leakage.<br>
+                            <span class="text-emerald-400 font-bold">Fix:</span> True Multi-Tenant Architecture. Data is now strictly siloed using the OAuth2 Subject ID (Tenant ID).
+                        </li>
+                        <li class="fragment fade-up">
+                            <span class="text-rose-400 font-bold">Threat:</span> Exposed MinIO Object Storage.<br>
+                            <span class="text-emerald-400 font-bold">Fix:</span> Streaming is now secured via on-the-fly, cryptographically signed, short-lived URLs.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Slide 4 -->
+            <section data-auto-animate data-transition="slide">
+                <h2 class="text-gradient font-bold mb-10 text-5xl">Current Secure Architecture</h2>
+                <div class="glass-card text-left space-y-6 text-xl text-slate-300">
+                    <div class="fragment fade-right p-4 border-l-4 border-primary-500 bg-slate-800/50 rounded-r-xl">
+                        <strong class="text-white">Identity Provider (Keycloak):</strong> Issues secure JWTs and manages user lifecycles natively.
+                    </div>
+                    <div class="fragment fade-right p-4 border-l-4 border-emerald-500 bg-slate-800/50 rounded-r-xl">
+                        <strong class="text-white">API Gateway:</strong> Validates JWT signatures and strictly routes traffic.
+                    </div>
+                    <div class="fragment fade-right p-4 border-l-4 border-purple-500 bg-slate-800/50 rounded-r-xl">
+                        <strong class="text-white">Tenant Context Injection:</strong> Gateway extracts the 'sub' (Tenant ID) and injects it into downstream headers.
+                    </div>
+                    <div class="fragment fade-right p-4 border-l-4 border-rose-500 bg-slate-800/50 rounded-r-xl">
+                        <strong class="text-white">Stateless Microservices:</strong> MongoDB and MinIO queries are strictly scoped to the injected Tenant ID.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5 -->
+            <section data-auto-animate data-transition="slide">
+                <h2 class="text-white font-bold mb-8 text-5xl">Lifecycle of a Request</h2>
+                <div class="glass-card">
+                    <ol class="space-y-4 text-left text-lg text-slate-300 list-decimal list-inside marker:text-primary-500 marker:font-bold">
+                        <li class="fragment fade-up">Client initiates request to API Gateway with Bearer token.</li>
+                        <li class="fragment fade-up">API Gateway validates the JWT via Keycloak public keys.</li>
+                        <li class="fragment fade-up">Gateway enriches request with `X-Tenant-ID` and routes via Eureka.</li>
+                        <li class="fragment fade-up">Backend Service queries MongoDB using Tenant ID to verify ownership.</li>
+                        <li class="fragment fade-up">Backend calls MinIO to generate a short-lived presigned URL.</li>
+                        <li class="fragment fade-up">Client safely streams audio directly from MinIO bypassing backend load.</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Slide 6 -->
+            <section data-auto-animate data-transition="zoom">
+                <h2 class="text-gradient font-bold mb-6 text-5xl">Architecture Flow</h2>
+                <div class="glass-card bg-slate-900 p-4 border-slate-700">
+                    <div class="mermaid text-sm" style="background: transparent;">
+                        graph TD
+                        classDef default fill:#1e293b,stroke:#334155,stroke-width:2px,color:#f1f5f9;
+                        classDef client fill:#f43f5e,stroke:#fff,stroke-width:2px,color:#fff;
+                        classDef gateway fill:#6366f1,stroke:#fff,stroke-width:2px,color:#fff;
+                        classDef auth fill:#eab308,stroke:#fff,stroke-width:2px,color:#000;
+                        classDef storage fill:#3b82f6,stroke:#fff,stroke-width:2px,color:#fff;
+
+                        C["💻 React Client"]:::client
+                        K["🔐 Keycloak"]:::auth
+                        G["🛡️ API Gateway"]:::gateway
+                        B["⚙️ Backend Service"]:::default
+                        DB["🍃 MongoDB"]:::storage
+                        S3["🪣 MinIO"]:::storage
+
+                        C -- "1. Login" --> K
+                        K -. "2. JWT" .-> C
+                        C -- "3. Audio Req" --> G
+                        G -- "4. Verify" --> K
+                        G -- "5. Route" --> B
+                        B -- "6. Fetch Metadata" --> DB
+                        B -- "7. Sign URL" --> S3
+                        B -. "8. URL" .-> G
+                        G -. "9. URL" .-> C
+                        C -- "10. Stream" --> S3
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            controls: true,
+            progress: true,
+            center: true,
+            width: 1200,
+            height: 800,
+            margin: 0.1,
+        });
+    </script>
+</body>
+</html>

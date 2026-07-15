@@ -4,6 +4,7 @@ import App from './App.jsx';
 import './index.css';
 import api from './services/api';
 import { AudioPipelineProvider } from './context/AudioPipelineContext';
+import LandingPage from './components/LandingPage';
 
 const Main = () => {
   const [user, setUser] = useState(null);
@@ -14,14 +15,12 @@ const Main = () => {
       .then(response => {
         if (response.data && response.data.preferred_username) {
           setUser(response.data);
-          setInitialized(true);
-        } else {
-          window.location.href = 'http://localhost:8080/oauth2/authorization/keycloak';
         }
+        setInitialized(true);
       })
       .catch(error => {
         console.error("Authentication check failed", error);
-        window.location.href = 'http://localhost:8080/oauth2/authorization/keycloak';
+        setInitialized(true);
       });
   }, []);
 
@@ -36,11 +35,7 @@ const Main = () => {
   }
 
   if (initialized && !user) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-slate-50 text-rose-500">
-        <div className="text-xl">Authentication Failed. Please reload.</div>
-      </div>
-    );
+    return <LandingPage />;
   }
 
   return (

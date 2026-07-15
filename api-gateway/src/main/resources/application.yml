@@ -20,12 +20,15 @@ spring:
           issuer-uri: http://localhost:9090/realms/simplymusic
   codec:
     max-in-memory-size: 100MB
+  config:
+    import: optional:file:../.env[.properties]
   application:
     name: api-gateway
   data:
     redis:
       host: localhost
       port: 6379
+      password: ${REDIS_PASSWORD}
   cloud:
     gateway:
       globalcors:

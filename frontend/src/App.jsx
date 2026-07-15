@@ -20,11 +20,23 @@ const NavBar = ({ user }) => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
-    // Check local storage or system preference on mount
-    const savedTheme = localStorage.getItem('theme');
+    // Check cookie first, then local storage, then system preference on mount
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    };
+    
+    const savedTheme = getCookie('theme') || localStorage.getItem('theme');
     if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark'); // ensure localstorage is synced
+    } else {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
     }
   }, []);
 
@@ -33,9 +45,11 @@ const NavBar = ({ user }) => {
     if (!isDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
+      document.cookie = "theme=dark; path=/; max-age=31536000";
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+      document.cookie = "theme=light; path=/; max-age=31536000";
     }
   };
 
