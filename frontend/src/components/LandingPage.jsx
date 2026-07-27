@@ -272,7 +272,7 @@ const LandingPage = () => {
                 onClick={handleStart}
                 className="group inline-flex items-center gap-3 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full font-bold text-lg shadow-xl shadow-slate-900/20 dark:shadow-white/10 transition-all hover:shadow-2xl"
               >
-                Wear Headphones to Start
+                Get Started
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </motion.button>
             )}

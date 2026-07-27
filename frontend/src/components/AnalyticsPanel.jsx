@@ -136,41 +136,41 @@ const AnalyticsPanel = ({ onPlay }) => {
                     <div className="w-32 text-right">Plays</div>
                   </div>
                   
-                  {topTracks.map((item, index) => {
-                    const track = trackMap[item.trackId];
-                    if (!track) return null;
-
-                    return (
-                      <div 
-                        key={`top-${item.trackId}`} 
-                        className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white dark:hover:bg-slate-700/60 hover:shadow-md transition-all duration-300 group border border-transparent hover:border-slate-100 dark:hover:border-slate-600 cursor-pointer"
-                        onClick={() => onPlay && onPlay(track, topTracks.map(t => trackMap[t.trackId]).filter(Boolean))}
-                      >
-                        <div className="w-8 text-center text-slate-400 font-bold text-lg group-hover:text-primary-500 transition-colors">
-                          <span className="group-hover:hidden">{index + 1}</span>
-                          <Play className="w-5 h-5 mx-auto hidden group-hover:block fill-current" />
-                        </div>
-                        <div className="flex-1 flex items-center gap-4 min-w-0">
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center flex-shrink-0 group-hover:from-primary-50 group-hover:to-primary-100 dark:group-hover:from-primary-900/40 dark:group-hover:to-primary-800/40 transition-colors shadow-inner">
-                            <Disc3 className="w-6 h-6 text-slate-400 dark:text-slate-300 group-hover:text-primary-500 transition-colors" />
+                  {topTracks
+                    .map(item => ({ item, track: trackMap[item.trackId] }))
+                    .filter(obj => obj.track)
+                    .map(({ item, track }, index) => {
+                      return (
+                        <div 
+                          key={`top-${item.trackId}`} 
+                          className="flex items-center gap-4 p-3 rounded-2xl hover:bg-white dark:hover:bg-slate-700/60 hover:shadow-md transition-all duration-300 group border border-transparent hover:border-slate-100 dark:hover:border-slate-600 cursor-pointer"
+                          onClick={() => onPlay && onPlay(track, topTracks.map(t => trackMap[t.trackId]).filter(Boolean))}
+                        >
+                          <div className="w-8 text-center text-slate-400 font-bold text-lg group-hover:text-primary-500 transition-colors">
+                            <span className="group-hover:hidden">{index + 1}</span>
+                            <Play className="w-5 h-5 mx-auto hidden group-hover:block fill-current" />
                           </div>
-                          <div className="flex flex-col min-w-0">
-                            <span className="text-slate-800 dark:text-slate-100 font-bold text-base truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{track.title}</span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400 truncate">{track.artist}</span>
+                          <div className="flex-1 flex items-center gap-4 min-w-0">
+                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center flex-shrink-0 group-hover:from-primary-50 group-hover:to-primary-100 dark:group-hover:from-primary-900/40 dark:group-hover:to-primary-800/40 transition-colors shadow-inner">
+                              <Disc3 className="w-6 h-6 text-slate-400 dark:text-slate-300 group-hover:text-primary-500 transition-colors" />
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-slate-800 dark:text-slate-100 font-bold text-base truncate group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">{track.title}</span>
+                              <span className="text-sm text-slate-500 dark:text-slate-400 truncate">{track.artist}</span>
+                            </div>
+                          </div>
+                          <div className="w-32 flex items-center justify-end gap-3">
+                            <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden hidden md:block">
+                              <div 
+                                className="h-full bg-primary-500 rounded-full" 
+                                style={{ width: `${Math.max(5, (item.playCount / Math.max(...topTracks.map(t => t.playCount))) * 100)}%` }}
+                              />
+                            </div>
+                            <span className="text-xl font-black text-slate-700 dark:text-slate-200 w-10 text-right">{item.playCount}</span>
                           </div>
                         </div>
-                        <div className="w-32 flex items-center justify-end gap-3">
-                          <div className="h-2 w-full bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden hidden md:block">
-                            <div 
-                              className="h-full bg-primary-500 rounded-full" 
-                              style={{ width: `${Math.max(5, (item.playCount / Math.max(...topTracks.map(t => t.playCount))) * 100)}%` }}
-                            />
-                          </div>
-                          <span className="text-xl font-black text-slate-700 dark:text-slate-200 w-10 text-right">{item.playCount}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               )}
             </div>
@@ -190,33 +190,33 @@ const AnalyticsPanel = ({ onPlay }) => {
                 </div>
               ) : (
                 <div className="flex flex-col gap-1 bg-white/40 dark:bg-slate-800/60 backdrop-blur-xl border border-white/60 dark:border-slate-700 shadow-sm rounded-3xl p-4 flex-1">
-                  {history.map((item, index) => {
-                    const track = trackMap[item.trackId];
-                    if (!track) return null;
-
-                    return (
-                      <div 
-                        key={`hist-${item.trackId}-${index}`} 
-                        className="flex items-center justify-between p-3 rounded-2xl hover:bg-white dark:hover:bg-slate-700/60 hover:shadow-sm transition-all group cursor-pointer"
-                        onClick={() => onPlay && onPlay(track, history.map(t => trackMap[t.trackId]).filter(Boolean))}
-                      >
-                        <div className="flex items-center gap-3 min-w-0 flex-1">
-                          <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/30 transition-colors">
-                            <Play className="w-4 h-4 text-slate-400 dark:text-slate-300 group-hover:text-primary-500 fill-current opacity-0 group-hover:opacity-100 transition-opacity absolute" />
-                            <History className="w-4 h-4 text-slate-400 dark:text-slate-300 group-hover:opacity-0 transition-opacity" />
+                  {history
+                    .map(item => ({ item, track: trackMap[item.trackId] }))
+                    .filter(obj => obj.track)
+                    .map(({ item, track }, index) => {
+                      return (
+                        <div 
+                          key={`hist-${item.trackId}-${index}`} 
+                          className="flex items-center justify-between p-3 rounded-2xl hover:bg-white dark:hover:bg-slate-700/60 hover:shadow-sm transition-all group cursor-pointer"
+                          onClick={() => onPlay && onPlay(track, history.map(t => trackMap[t.trackId]).filter(Boolean))}
+                        >
+                          <div className="flex items-center gap-3 min-w-0 flex-1">
+                            <div className="w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700/50 flex items-center justify-center flex-shrink-0 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/30 transition-colors">
+                              <Play className="w-4 h-4 text-slate-400 dark:text-slate-300 group-hover:text-primary-500 fill-current opacity-0 group-hover:opacity-100 transition-opacity absolute" />
+                              <History className="w-4 h-4 text-slate-400 dark:text-slate-300 group-hover:opacity-0 transition-opacity" />
+                            </div>
+                            <div className="flex flex-col min-w-0 flex-1">
+                              <span className="text-slate-700 dark:text-slate-200 font-bold text-sm truncate group-hover:text-rose-500 transition-colors">{track.title}</span>
+                              <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{track.artist}</span>
+                            </div>
                           </div>
-                          <div className="flex flex-col min-w-0 flex-1">
-                            <span className="text-slate-700 dark:text-slate-200 font-bold text-sm truncate group-hover:text-rose-500 transition-colors">{track.title}</span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400 truncate">{track.artist}</span>
+                          <div className="flex items-center gap-1.5 text-slate-400 text-xs flex-shrink-0 pl-3">
+                            <Clock className="w-3.5 h-3.5" />
+                            {formatTimeAgo(item.lastPlayed)}
                           </div>
                         </div>
-                        <div className="flex items-center gap-1.5 text-slate-400 text-xs flex-shrink-0 pl-3">
-                          <Clock className="w-3.5 h-3.5" />
-                          {formatTimeAgo(item.lastPlayed)}
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               )}
             </div>

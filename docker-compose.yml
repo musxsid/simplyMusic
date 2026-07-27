@@ -8,7 +8,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - "27017:27017"
+      - "27018:27017"
     volumes:
       - mongo-data:/data/db
 
@@ -31,6 +31,9 @@ services:
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+      KC_HOSTNAME: http://localhost:9090
+      KC_HOSTNAME_STRICT_BACKCHANNEL: "true"
+      KC_HOSTNAME_STRICT: "false"
     ports:
       - "9090:8080"
     command: start-dev
@@ -51,6 +54,257 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  # ---------------------------------------------------
+  # Java Microservices Profile ("java")
+  # ---------------------------------------------------
+  eureka-server:
+    profiles: ["java"]
+    build:
+      context: ./backend/eureka-server
+    container_name: music-eureka
+    ports:
+      - "8761:8761"
+    depends_on:
+      - keycloak
+
+  api-gateway:
+    profiles: ["java"]
+    build:
+      context: ./backend/api-gateway
+    container_name: music-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATA_REDIS_HOST=redis
+    depends_on:
+      - eureka-server
+      - keycloak
+      - redis
+
+  upload-service:
+    profiles: ["java"]
+    build:
+      context: ./backend/upload-service
+    container_name: music-upload-service
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - eureka-server
+      - rabbitmq
+      - minio
+      - keycloak
+      - mongodb
+
+  processing-service:
+    profiles: ["java"]
+    build:
+      context: ./backend/processing-service
+    container_name: music-processing-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - eureka-server
+      - rabbitmq
+      - minio
+      - mongodb
+
+  streaming-service:
+    profiles: ["java"]
+    build:
+      context: ./backend/streaming-service
+    container_name: music-streaming-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - eureka-server
+      - minio
+      - mongodb
+      - keycloak
+      - rabbitmq
+
+  search-service:
+    profiles: ["java"]
+    build:
+      context: ./backend/search-service
+    container_name: music-search-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - eureka-server
+      - mongodb
+      - rabbitmq
+      - minio
+      - keycloak
+
+  analytics-service:
+    profiles: ["java"]
+    build:
+      context: ./backend/analytics-service
+    container_name: music-analytics-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - eureka-server
+      - rabbitmq
+      - mongodb
+
+  enrichment-service:
+    profiles: ["java"]
+    build:
+      context: ./backend/enrichment-service
+    container_name: music-enrichment-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+
+  # ---------------------------------------------------
+  # Rust Microservices Profile ("rust")
+  # ---------------------------------------------------
+  rust-api-gateway:
+    profiles: ["rust"]
+    build:
+      context: ./backend(rust)/api-gateway
+    container_name: music-rust-api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - KEYCLOAK_AUTH_URI=http://localhost:9090/realms/simplymusic/protocol/openid-connect/auth
+      - KEYCLOAK_TOKEN_URI=http://keycloak:8080/realms/simplymusic/protocol/openid-connect/token
+      - KEYCLOAK_CERTS_URI=http://keycloak:8080/realms/simplymusic/protocol/openid-connect/certs
+      - UPLOAD_SERVICE_URL=http://rust-upload-service:8081
+      - PROCESSING_SERVICE_URL=http://rust-processing-service:8084
+      - STREAMING_SERVICE_URL=http://rust-streaming-service:8085
+      - SEARCH_SERVICE_URL=http://rust-search-service:8086
+      - ANALYTICS_SERVICE_URL=http://rust-analytics-service:8082
+      - ENRICHMENT_SERVICE_URL=http://enrichment-service:8083
+    depends_on:
+      - keycloak
+      - redis
+
+  rust-upload-service:
+    profiles: ["rust"]
+    build:
+      context: ./backend(rust)/upload-service
+    container_name: music-rust-upload-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    depends_on:
+      - rabbitmq
+      - minio
+      - mongodb
+
+  rust-search-service:
+    profiles: ["rust"]
+    build:
+      context: ./backend(rust)/search-service
+    container_name: music-rust-search-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mongodb
+      - minio
+      - rabbitmq
+
+  rust-processing-service:
+    profiles: ["rust"]
+    build:
+      context: ./backend(rust)/processing-service
+    container_name: music-rust-processing-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - MINIO_URL=http://minio:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mongodb
+      - minio
+      - rabbitmq
+
+  rust-streaming-service:
+    profiles: ["rust"]
+    build:
+      context: ./backend(rust)/streaming-service
+    container_name: music-rust-streaming-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - MINIO_URL=http://minio:9000
+      - MINIO_EXTERNAL_URL=http://localhost:9000
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mongodb
+      - minio
+      - rabbitmq
+
+  rust-analytics-service:
+    profiles: ["rust"]
+    build:
+      context: ./backend(rust)/analytics-service
+    container_name: music-rust-analytics-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://admin:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017/simplymusic?authSource=admin
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - mongodb
+      - rabbitmq
 
 volumes:
   mongo-data:

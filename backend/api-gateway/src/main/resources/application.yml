@@ -1,0 +1,93 @@
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web: DEBUG
+    reactor.netty.http.client: DEBUG
+
+spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            authorization-uri: http://localhost:9090/realms/simplymusic/protocol/openid-connect/auth
+            token-uri: http://keycloak:8080/realms/simplymusic/protocol/openid-connect/token
+            jwk-set-uri: http://keycloak:8080/realms/simplymusic/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: simplymusic-frontend
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid, profile, email
+            client-authentication-method: none
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/realms/simplymusic/protocol/openid-connect/certs
+  codec:
+    max-in-memory-size: 100MB
+  config:
+    import: optional:file:../.env[.properties]
+  application:
+    name: api-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PASSWORD}
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:5173"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      default-filters:
+        - TokenRelay
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 10
+            redis-rate-limiter.burstCapacity: 20
+            redis-rate-limiter.requestedTokens: 1
+            key-resolver: "#{@userKeyResolver}"
+      routes:
+        - id: upload-service
+          uri: lb://UPLOAD-SERVICE
+          predicates:
+            - Path=/api/v1/music/upload
+
+        - id: streaming-service
+          uri: lb://STREAMING-SERVICE
+          predicates:
+            - Path=/api/v1/music/stream/**
+
+        - id: search-service
+          uri: lb://SEARCH-SERVICE
+          predicates:
+            - Path=/api/v1/music/**
+
+        - id: analytics-service
+          uri: lb://ANALYTICS-SERVICE
+          predicates:
+            - Path=/api/v1/analytics/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+

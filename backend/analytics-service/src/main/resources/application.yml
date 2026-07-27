@@ -1,0 +1,29 @@
+server:
+  port: 8082
+
+spring:
+  config:
+    import: optional:file:../.env[.properties]
+  application:
+    name: analytics-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/simplymusic
+  rabbitmq:
+    host: localhost
+    port: 5672
+    listener:
+      simple:
+        missing-queues-fatal: false
+
+logging:
+  level:
+    root: INFO
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Disc3, Clock, Heart, ListMusic, ChevronRight } from 'lucide-react';
+import { Play, Disc3, Clock, Heart, ListMusic, ChevronRight, Music } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
@@ -66,6 +66,25 @@ const Home = ({ onPlay }) => {
           {getGreeting()}
         </h1>
       </header>
+
+      {/* Empty State */}
+      {!featuredTrack && recentTracks.length === 0 && playlists.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center px-4 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md rounded-3xl border border-slate-200/50 dark:border-slate-700/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
+          <div className="w-20 h-20 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mb-6 shadow-inner">
+            <Music className="w-10 h-10 text-primary-500" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-black text-slate-800 dark:text-slate-100 mb-3">Your Library is Empty</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md text-lg">
+            It's a bit quiet here. Start building your audiophile collection by uploading your first high-res track.
+          </p>
+          <button 
+            onClick={() => navigate('/upload')}
+            className="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-400 hover:to-primary-500 text-white rounded-full font-bold text-lg shadow-lg shadow-primary-500/30 transition-all hover:scale-105 active:scale-95"
+          >
+            Upload Music
+          </button>
+        </div>
+      )}
 
       {/* Hero / Daily Mix Banner */}
       {featuredTrack && (

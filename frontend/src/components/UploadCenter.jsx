@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { UploadCloud, FileAudio, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import { useToast } from '../context/ToastContext';
@@ -192,12 +193,25 @@ const UploadCenter = () => {
               </div>
             </div>
             
-            <button
-              onClick={() => setMetadata(null)}
-              className="mt-8 text-primary-400 hover:text-primary-300 font-medium underline-offset-4 hover:underline"
-            >
-              Upload another file
-            </button>
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <button
+                onClick={() => {
+                  setMetadata(null);
+                  setFile(null);
+                  setProgress(0);
+                  setError(null);
+                }}
+                className="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 font-semibold py-2.5 px-6 rounded-full transition-colors text-sm"
+              >
+                Upload Another Song
+              </button>
+              <Link
+                to="/library"
+                className="bg-primary-500 hover:bg-primary-400 text-white font-bold py-2.5 px-6 rounded-full transition-transform active:scale-95 shadow-glow-primary text-sm"
+              >
+                Go to Library
+              </Link>
+            </div>
           </div>
         )}
       </div>
